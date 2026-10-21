@@ -1,16 +1,39 @@
 import { useState } from "react";
-import { Package, Plus, Search, TriangleAlert, Wallet } from "lucide-react";
+import {
+  Eye,
+  Package,
+  Pencil,
+  Plus,
+  Search,
+  TriangleAlert,
+  Wallet,
+} from "lucide-react";
 import { mockInventoryItems } from "./inventoryMockData";
 import { getStockStatus } from "./inventoryTypes";
 import type { InventoryItem } from "./inventoryTypes";
 import StockStatusBadge from "./components/StockStatusBadge";
+import ItemFormModal from "./components/ItemFormModal";
+import type { ItemFormData, ModalMode } from "./components/ItemFormModal";
+
+// අලුත් item එකකට ඊළඟ ID එක හදනවා (උදා: IT-0022)
+function generateItemId(list: InventoryItem[]): string {
+  const maxNumber = list.reduce(
+    (max, item) => Math.max(max, Number(item.id.replace("IT-", "")) || 0),
+    0
+  );
+  return `IT-${String(maxNumber + 1).padStart(4, "0")}`;
+}
 
 export default function InventoryPage() {
-  // state: items list එක සහ search box එකේ type කරන text එක
-  const [items] = useState<InventoryItem[]>(mockInventoryItems);
+  // state: items list, search text, සහ modal එකේ තත්ත්වය (null = modal වසා තියෙනවා)
+  const [items, setItems] = useState<InventoryItem[]>(mockInventoryItems);
   const [searchText, setSearchText] = useState("");
+  const [modal, setModal] = useState<{
+    mode: ModalMode;
+    item: InventoryItem | null;
+  } | null>(null);
 
-  // Summary card values (items list එකෙන් ගණනය කරනවා)
+  // Summary card values
   const totalItems = items.length;
   const lowStockCount = items.filter(
     (item) => getStockStatus(item) !== "in-stock"
@@ -28,6 +51,27 @@ export default function InventoryPage() {
       item.partNumber.toLowerCase().includes(keyword)
   );
 
+  // Modal එකෙන් Save කළාම: edit නම් update, add නම් අලුතින් ඇතුල් කරනවා
+  function handleSave(data: ItemFormData) {
+    if (modal?.mode === "edit" && modal.item) {
+      const id = modal.item.id;
+      setItems((prev) =>
+        prev.map((item) => (item.id === id ? { ...data, id } : item))
+      );
+    } else {
+      setItems((prev) => [...prev, { ...data, id: generateItemId(prev) }]);
+    }
+    setModal(null);
+  }
+
+  // Delete: confirm කළොත් list එකෙන් අයින් කරනවා
+  function handleDelete(id: string) {
+    if (window.confirm("Are you sure you want to delete this item?")) {
+      setItems((prev) => prev.filter((item) => item.id !== id));
+      setModal(null);
+    }
+  }
+
   return (
     <div className="p-8">
       {/* Header */}
@@ -36,10 +80,13 @@ export default function InventoryPage() {
           <h1 className="text-2xl font-semibold text-slate-900">
             Inventory Overview
           </h1>
-          <p className="text-sm text-slate-500">Manage items and view items history</p>
+          <p className="text-sm text-slate-500">
+            Manage items and view items history
+          </p>
         </div>
         <button
           type="button"
+          onClick={() => setModal({ mode: "add", item: null })}
           className="flex items-center gap-2 rounded-lg bg-blue-900 px-5 py-3 text-sm font-medium text-white hover:bg-blue-800"
         >
           <Plus size={18} />
@@ -52,7 +99,9 @@ export default function InventoryPage() {
         <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5">
           <div>
             <p className="text-sm text-slate-500">Total Stock Items</p>
-            <p className="text-2xl font-semibold text-slate-900">{totalItems}</p>
+            <p className="text-2xl font-semibold text-slate-900">
+              {totalItems}
+            </p>
           </div>
           <Package className="text-yellow-500" />
         </div>
@@ -60,7 +109,9 @@ export default function InventoryPage() {
         <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5">
           <div>
             <p className="text-sm text-slate-500">Low Stock</p>
-            <p className="text-2xl font-semibold text-slate-900">{lowStockCount}</p>
+            <p className="text-2xl font-semibold text-slate-900">
+              {lowStockCount}
+            </p>
             <span className="text-xs text-red-500">! Action Needed</span>
           </div>
           <TriangleAlert className="text-red-500" />
@@ -103,6 +154,7 @@ export default function InventoryPage() {
               <th className="px-4 py-3 font-medium">Price (1pcs)</th>
               <th className="px-4 py-3 font-medium">Quantity On Hand</th>
               <th className="px-4 py-3 font-medium">Status</th>
+              <th className="px-4 py-3 font-medium">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -118,12 +170,35 @@ export default function InventoryPage() {
                   <td className="px-4 py-4">
                     <StockStatusBadge status={status} />
                   </td>
+                  <td className="px-4 py-4">
+                    <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        aria-label={`View ${item.name}`}
+                        onClick={() => setModal({ mode: "view", item })}
+                        className="text-slate-400 hover:text-slate-700"
+                      >
+                        <Eye size={18} />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label={`Edit ${item.name}`}
+                        onClick={() => setModal({ mode: "edit", item })}
+                        className="text-blue-700 hover:text-blue-900"
+                      >
+                        <Pencil size={18} />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               );
             })}
             {filteredItems.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
+                <td
+                  colSpan={7}
+                  className="px-4 py-8 text-center text-slate-500"
+                >
                   No items found.
                 </td>
               </tr>
@@ -131,6 +206,18 @@ export default function InventoryPage() {
           </tbody>
         </table>
       </div>
+
+      {/* Modal: modal state එක null නොවේ නම් පමණක් පෙන්වනවා */}
+      {modal && (
+        <ItemFormModal
+          key={modal.item?.id ?? "new"}
+          mode={modal.mode}
+          item={modal.item}
+          onClose={() => setModal(null)}
+          onSave={handleSave}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   );
 }

@@ -9,6 +9,8 @@ export interface InventoryItem {
   price: number;
   quantity: number;
   lowStockAlert: number;
+  description?: string;
+  allowBackOrder?: boolean;
 }
 
 // Status නිර්ණය කරන rule එක:
