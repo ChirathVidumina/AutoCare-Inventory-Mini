@@ -1,97 +1,159 @@
+
 import { NavLink, Outlet } from "react-router-dom";
 import {
   LayoutDashboard,
+  Video,
   ClipboardList,
   Users,
-  Shapes,
-  Archive,
+  Layers3,
+  Boxes,
   Receipt,
-  Network,
+  UserRound,
+  Wrench,
   ChartNoAxesCombined,
   Bell,
   Settings,
-  Video,
-  Wrench,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-const menuItems = [
-  { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+type SidebarItem = {
+  label: string;
+  path: string;
+  icon: LucideIcon | null;
+};
 
-  { name: "Video Assist", path: "/video-assistance", icon: Video },
-
-  { name: "Job Card", path: "/job-cards", icon: ClipboardList },
-
-  { name: "Customer", path: "/customers", icon: Users },
-
-  { name: "Category", path: "/categories", icon: Shapes },
-
-  { name: "Inventory", path: "/inventory", icon: Archive },
-
-  { name: "Billing", path: "/billing", icon: Receipt },
-
-  { name: "Staff", path: "/staff", icon: Network },
-
-  { name: "Mechanic", path: "/mechanics", icon: Wrench },
-
-  { name: "Reports", path: "/reports", icon: ChartNoAxesCombined },
+const menuItems: SidebarItem[] = [
+  {
+    label: "Dashboard",
+    path: "/dashboard",
+    icon: LayoutDashboard,
+  },
+  {
+    label: "Video Assist",
+    path: "/video-assistance",
+    icon: Video,
+  },
+  {
+    label: "Job Card",
+    path: "/job-cards",
+    icon: ClipboardList,
+  },
+  {
+    label: "Customer",
+    path: "/customers",
+    icon: Users,
+  },
+  {
+    label: "Category",
+    path: "/categories",
+    icon: Layers3,
+  },
+  {
+    label: "Inventory",
+    path: "/inventory",
+    icon: Boxes,
+  },
+  {
+    label: "Billing",
+    path: "/billing",
+    icon: Receipt,
+  },
+  {
+    label: "Staff",
+    path: "/staff",
+    icon: UserRound,
+  },
+  {
+    label: "Services & Packages",
+    path: "/services-packages",
+    icon: null,
+  },
+  {
+    label: "Mechanic",
+    path: "/mechanics",
+    icon: Wrench,
+  },
+  {
+    label: "Reports",
+    path: "/reports",
+    icon: ChartNoAxesCombined,
+  },
 ];
+
+const bottomItems: SidebarItem[] = [
+  {
+    label: "Notification",
+    path: "/notifications",
+    icon: Bell,
+  },
+  {
+    label: "Setting",
+    path: "/settings",
+    icon: Settings,
+  },
+];
+
+function SidebarLink({ item }: { item: SidebarItem }) {
+  const Icon = item.icon;
+
+  return (
+    <NavLink
+      to={item.path}
+      className={({ isActive }) =>
+        `flex min-h-11 items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+          isActive
+            ? "bg-[#4260ae] text-white"
+            : "text-white/90 hover:bg-white/10"
+        }`
+      }
+    >
+      {/* Keep text aligned even when the icon is absent */}
+      <span className="flex w-5 shrink-0 items-center justify-center">
+        {Icon ? (
+          <Icon size={19} className="text-[#70a7ff]" />
+        ) : null}
+      </span>
+
+      <span>{item.label}</span>
+    </NavLink>
+  );
+}
 
 export default function MainLayout() {
   return (
-    <div className="flex min-h-screen">
-      <aside className="flex min-h-screen w-56 shrink-0 flex-col bg-[#253f8d] text-white">
-        <div className="pt-6 text-center">
-          <h1 className="text-xl font-bold text-yellow-300">
+    <div className="flex min-h-screen bg-[#f8f9fc]">
+      {/* Sidebar */}
+      <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col bg-[#253f8d] px-4 py-6">
+        {/* Brand */}
+        <div className="mb-7 px-4">
+          <h1 className="text-2xl font-bold tracking-wide text-white">
             Auto Care
           </h1>
-          <p className="mt-1 text-xs text-blue-100">
-            Admin Panel
-          </p>
         </div>
 
-        <nav className="mt-12 flex-1 space-y-2 px-3">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-
-            return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  `flex items-center gap-4 rounded-full px-4 py-3 text-sm transition-colors ${
-                    isActive
-                      ? "bg-blue-600 text-white"
-                      : "hover:bg-blue-700"
-                  }`
-                }
-              >
-                <Icon size={19} className="text-sky-400" />
-                <span>{item.name}</span>
-              </NavLink>
-            );
-          })}
+        {/* Main Navigation */}
+        <nav
+          aria-label="Main navigation"
+          className="min-h-0 flex-1 space-y-1 overflow-y-auto"
+        >
+          {menuItems.map((item) => (
+            <SidebarLink key={item.path} item={item} />
+          ))}
         </nav>
 
-        <div className="space-y-2 px-3 pb-6">
-          <NavLink
-            to="/notifications"
-            className="flex items-center gap-4 rounded-lg px-4 py-3 text-sm hover:bg-blue-700"
-          >
-            <Bell size={19} className="text-sky-400" />
-            Notification
-          </NavLink>
-
-          <NavLink
-            to="/settings"
-            className="flex items-center gap-4 rounded-lg px-4 py-3 text-sm hover:bg-blue-700"
-          >
-            <Settings size={19} className="text-sky-400" />
-            Setting
-          </NavLink>
-        </div>
+        {/* Bottom Navigation */}
+        <nav
+          aria-label="Account navigation"
+          className="mt-4 space-y-1 border-t border-white/20 pt-4"
+        >
+          {bottomItems.map((item) => (
+            <SidebarLink key={item.path} item={item} />
+          ))}
+        </nav>
       </aside>
 
-      <main className="min-w-0 flex-1 bg-[#f5f6fa]">
+      {/* Page Content */}
+      <main className="min-w-0 flex-1">
         <Outlet />
       </main>
     </div>
