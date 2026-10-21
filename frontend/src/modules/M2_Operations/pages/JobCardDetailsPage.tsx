@@ -1,7 +1,18 @@
 import { useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ArrowLeft, Car, History, Mail, MapPin, Pencil, Phone, User, Wrench } from "lucide-react";
-import { getJobCardById, jobCards, type JobCard, type JobCardStatus } from "../data/jobCardsData";
+import {
+  ArrowLeft, Car, CheckCircle2, ClipboardList, History, Mail, MapPin, Package,
+  Pencil, Phone, Plus, Receipt, Send, Trash2, User, Wrench,
+} from "lucide-react";
+import {
+  getJobCardById,
+  getJobCardTotals,
+  jobCards,
+  TAX_RATE,
+  type JobCard,
+  type JobCardStatus,
+  type ServiceStatus,
+} from "../data/jobCardsData";
 import { mechanicPerformance } from "../data/dashboardData";
 
 const statusStyles: Record<JobCardStatus, string> = {
@@ -10,6 +21,14 @@ const statusStyles: Record<JobCardStatus, string> = {
   Completed: "bg-green-100 text-green-800",
   Invoiced: "bg-slate-200 text-slate-700",
 };
+
+const serviceStyles: Record<ServiceStatus, string> = {
+  Pending: "bg-slate-100 text-slate-700",
+  "In Progress": "bg-amber-100 text-amber-800",
+  Completed: "bg-green-100 text-green-800",
+};
+
+const money = (amount: number) => `Rs ${amount.toLocaleString()}`;
 
 const mechanicNames = mechanicPerformance.map((m) => m.name);
 
@@ -78,6 +97,29 @@ function JobCardDetails({ job }: { job: JobCard }) {
   const [editingMechanic, setEditingMechanic] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
+  
+  const [status, setStatus] = useState(job.status);
+  const [services, setServices] = useState(job.services);
+  const [parts, setParts] = useState(job.parts);
+
+  // money is always worked out from the current services and parts
+  const totals = getJobCardTotals({ ...job, services, parts });
+
+  const isClosed = status === "Completed" || status === "Invoiced";
+  const unfinished = services.filter((s) => s.status !== "Completed").length;
+  const canComplete = !isClosed && services.length > 0 && unfinished === 0;
+
+  const changeServiceStatus = (serviceId: string, newStatus: ServiceStatus) => {
+    setServices(services.map((s) => (s.id === serviceId ? { ...s, status: newStatus } : s)));
+    if (status === "Open" && newStatus !== "Pending") setStatus("In Progress");
+  };
+
+  const removeService = (serviceId: string) =>
+    setServices(services.filter((s) => s.id !== serviceId));
+
+  const removePart = (partNo: string) =>
+    setParts(parts.filter((p) => p.partNo !== partNo));
+
   // other job cards for the same vehicle (same plate number)
   const history = jobCards.filter((j) => j.plateNo === job.plateNo && j.id !== job.id);
 
@@ -90,8 +132,8 @@ function JobCardDetails({ job }: { job: JobCard }) {
       {/* Header */}
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <h1 className="text-2xl font-bold text-slate-900">Job Card #{job.id}</h1>
-        <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[job.status]}`}>
-          {job.status}
+                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusStyles[status]}`}>
+          {status}
         </span>
         {job.priority === "High" && (
           <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-700">
@@ -230,7 +272,191 @@ function JobCardDetails({ job }: { job: JobCard }) {
         </InfoCard>
       </div>
 
-      {/* Services, parts and cost summary come next */}
+            {/* Services, parts and cost summary */}
+      <div className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-3">
+        <div className="space-y-5 xl:col-span-2">
+          <InfoCard
+            title="Service & Labour"
+            icon={<ClipboardList size={18} />}
+            action={
+              !isClosed && (
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100"
+                >
+                  <Plus size={14} /> Add Service
+                </button>
+              )
+            }
+          >
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px] text-left text-sm">
+                <thead>
+                  <tr className="bg-slate-100 text-slate-700">
+                    <th className="px-3 py-2 font-semibold">Service</th>
+                    <th className="px-3 py-2 font-semibold">Assigned To</th>
+                    <th className="px-3 py-2 font-semibold">Hours (est / actual)</th>
+                    <th className="px-3 py-2 font-semibold">Status</th>
+                    <th className="px-3 py-2 text-right font-semibold">Labour</th>
+                    {!isClosed && <th className="px-3 py-2"><span className="sr-only">Remove</span></th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {services.map((s) => (
+                    <tr key={s.id} className="border-t border-slate-200">
+                      <td className="px-3 py-2.5">
+                        <p className="font-medium text-slate-900">{s.description}</p>
+                        <p className="text-xs text-slate-500">{s.type}</p>
+                      </td>
+                      <td className={`px-3 py-2.5 ${s.mechanic === "Unassigned" ? "italic text-slate-400" : ""}`}>
+                        {s.mechanic}
+                      </td>
+                      <td className="px-3 py-2.5">
+                        {s.estHours} h / {s.actualHours} h
+                      </td>
+                      <td className="px-3 py-2.5">
+                        {isClosed ? (
+                          <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${serviceStyles[s.status]}`}>
+                            {s.status}
+                          </span>
+                        ) : (
+                          <select
+                            value={s.status}
+                            onChange={(e) => changeServiceStatus(s.id, e.target.value as ServiceStatus)}
+                            aria-label={`Status of ${s.description}`}
+                            className={`rounded-full border-0 px-2.5 py-1 text-xs font-semibold ${serviceStyles[s.status]}`}
+                          >
+                            <option>Pending</option>
+                            <option>In Progress</option>
+                            <option>Completed</option>
+                          </select>
+                        )}
+                      </td>
+                      <td className="px-3 py-2.5 text-right">{money(s.labourCost)}</td>
+                      {!isClosed && (
+                        <td className="px-3 py-2.5 text-right">
+                          <button
+                            type="button"
+                            onClick={() => removeService(s.id)}
+                            aria-label={`Remove ${s.description}`}
+                            className="text-slate-400 hover:text-red-600"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                  {services.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="px-3 py-6 text-center text-slate-500">
+                        No services added yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </InfoCard>
+
+          <InfoCard title="Parts Requisition" icon={<Package size={18} />}>
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[640px] text-left text-sm">
+                <thead>
+                  <tr className="bg-slate-100 text-slate-700">
+                    <th className="px-3 py-2 font-semibold">Part No</th>
+                    <th className="px-3 py-2 font-semibold">Part Name</th>
+                    <th className="px-3 py-2 text-right font-semibold">Quantity</th>
+                    <th className="px-3 py-2 text-right font-semibold">Unit Price</th>
+                    <th className="px-3 py-2 text-right font-semibold">Total Price</th>
+                    {!isClosed && <th className="px-3 py-2"><span className="sr-only">Remove</span></th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {parts.map((p) => (
+                    <tr key={p.partNo} className="border-t border-slate-200">
+                      <td className="px-3 py-2.5 font-mono text-xs text-slate-600">{p.partNo}</td>
+                      <td className="px-3 py-2.5">{p.name}</td>
+                      <td className="px-3 py-2.5 text-right">{p.qty}</td>
+                      <td className="px-3 py-2.5 text-right">{money(p.unitPrice)}</td>
+                      <td className="px-3 py-2.5 text-right font-medium">{money(p.qty * p.unitPrice)}</td>
+                      {!isClosed && (
+                        <td className="px-3 py-2.5 text-right">
+                          <button
+                            type="button"
+                            onClick={() => removePart(p.partNo)}
+                            aria-label={`Remove ${p.name}`}
+                            className="text-slate-400 hover:text-red-600"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                  {parts.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="px-3 py-6 text-center text-slate-500">
+                        No parts used yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </InfoCard>
+        </div>
+
+        <div className="self-start">
+          <InfoCard title="Cost Summary" icon={<Receipt size={18} />}>
+            <dl className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <dt className="text-slate-600">Labour total</dt>
+                <dd className="font-medium">{money(totals.labour)}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-slate-600">Parts total</dt>
+                <dd className="font-medium">{money(totals.parts)}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-slate-600">Service charge</dt>
+                <dd className="font-medium">{money(totals.serviceCharge)}</dd>
+              </div>
+              <div className="flex justify-between">
+                <dt className="text-slate-600">Tax ({TAX_RATE * 100}%)</dt>
+                <dd className="font-medium">{money(totals.tax)}</dd>
+              </div>
+              <div className="flex justify-between border-t border-slate-200 pt-3">
+                <dt className="text-base font-bold text-slate-900">Grand Total</dt>
+                <dd className="text-lg font-bold text-blue-800">{money(totals.grandTotal)}</dd>
+              </div>
+            </dl>
+
+            <button
+              type="button"
+              disabled={!canComplete}
+              onClick={() => setStatus("Completed")}
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-blue-900 px-4 py-3 text-sm font-semibold text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-slate-300"
+            >
+              <CheckCircle2 size={18} /> {isClosed ? "Job completed" : "Complete Job"}
+            </button>
+            {!isClosed && unfinished > 0 && (
+              <p className="mt-2 text-center text-xs text-slate-500">
+                {unfinished} {unfinished === 1 ? "service is" : "services are"} not completed yet
+              </p>
+            )}
+
+            <button
+              type="button"
+              disabled={status !== "Completed"}
+              onClick={() => setStatus("Invoiced")}
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-slate-400 disabled:hover:bg-transparent"
+            >
+              <Send size={18} /> {status === "Invoiced" ? "Invoice sent" : "Send Invoice"}
+            </button>
+          </InfoCard>
+        </div>
+      </div>
     </div>
   );
 }
