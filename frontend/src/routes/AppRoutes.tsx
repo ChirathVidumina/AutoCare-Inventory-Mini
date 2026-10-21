@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "../components/layout/MainLayout";
+   import InvoiceListPage from "../modules/M4_BookingBilling/InvoiceListPage";
 
 function PlaceholderPage({ title }: { title: string }) {
   return (
@@ -35,7 +36,9 @@ export default function AppRoutes() {
           element={<Navigate to="/dashboard" replace />}
         />
 
-        {pages.map((page) => (
+           <Route path="billing" element={<InvoiceListPage />} />
+
+          {pages.filter((page) => page.path !== "billing").map((page) => (
           <Route
             key={page.path}
             path={page.path}
