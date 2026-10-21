@@ -42,6 +42,23 @@ export type JobCard = {
   parts: PartItem[];
 };
 
+/** Parts in stock. Later this list will come from the Inventory module (M5). */
+export const partsCatalogue: Omit<PartItem, "qty">[] = [
+  { partNo: "EO-5W30", name: "Engine oil 5W-30 (4L)", unitPrice: 14500 },
+  { partNo: "OF-112", name: "Oil filter", unitPrice: 2200 },
+  { partNo: "AF-310", name: "Air filter", unitPrice: 3800 },
+  { partNo: "CF-220", name: "Cabin air filter", unitPrice: 3200 },
+  { partNo: "SP-IR4", name: "Spark plug (iridium)", unitPrice: 1800 },
+  { partNo: "BP-F45", name: "Front brake pad set", unitPrice: 11500 },
+  { partNo: "BF-DOT4", name: "Brake fluid DOT4 (1L)", unitPrice: 2800 },
+  { partNo: "CL-1L", name: "Coolant (1L)", unitPrice: 1900 },
+  { partNo: "WB-22", name: "Wiper blade", unitPrice: 1650 },
+  { partNo: "BT-NS60", name: "Car battery NS60", unitPrice: 11500 },
+  { partNo: "DF-4M41", name: "Diesel fuel filter", unitPrice: 4600 },
+];
+
+export const serviceTypes = ["Routine Maintenance", "Repair", "Inspection", "Diagnostics", "Detailing"];
+
 export const SERVICE_CHARGE = 500; // LKR, fixed per job card
 export const TAX_RATE = 0.03; // 3%
 

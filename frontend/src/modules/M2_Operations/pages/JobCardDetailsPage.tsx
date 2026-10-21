@@ -12,9 +12,12 @@ import {
   type JobCard,
   type JobCardStatus,
   type ServiceStatus,
+  type PartItem,
+  type ServiceItem,
 } from "../data/jobCardsData";
 import { mechanicPerformance } from "../data/dashboardData";
 import InspectionPhotos from "../components/InspectionPhotos";
+import AddServiceModal from "../components/AddServiceModal";
 
 const statusStyles: Record<JobCardStatus, string> = {
   Open: "bg-blue-100 text-blue-800",
@@ -120,6 +123,26 @@ function JobCardDetails({ job }: { job: JobCard }) {
 
   const removePart = (partNo: string) =>
     setParts(parts.filter((p) => p.partNo !== partNo));
+
+  
+  const [addingService, setAddingService] = useState(false);
+
+  const addService = (service: ServiceItem, newParts: PartItem[]) => {
+    setServices([...services, service]);
+
+    // if a part is already on the job card, increase its quantity instead of adding it twice
+    let updatedParts = parts;
+    for (const part of newParts) {
+      const alreadyThere = updatedParts.some((p) => p.partNo === part.partNo);
+      updatedParts = alreadyThere
+        ? updatedParts.map((p) => (p.partNo === part.partNo ? { ...p, qty: p.qty + part.qty } : p))
+        : [...updatedParts, part];
+    }
+    setParts(updatedParts);
+
+    if (status === "Open" && service.status !== "Pending") setStatus("In Progress");
+    setAddingService(false);
+  };
 
   // other job cards for the same vehicle (same plate number)
   const history = jobCards.filter((j) => j.plateNo === job.plateNo && j.id !== job.id);
@@ -283,6 +306,7 @@ function JobCardDetails({ job }: { job: JobCard }) {
               !isClosed && (
                 <button
                   type="button"
+                  onClick={() => setAddingService(true)}
                   className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100"
                 >
                   <Plus size={14} /> Add Service
@@ -459,6 +483,16 @@ function JobCardDetails({ job }: { job: JobCard }) {
         </div>
       </div>
       <InspectionPhotos readOnly={isClosed} />
+      
+      {addingService && (
+        <AddServiceModal
+          jobId={job.id}
+          vehicle={job.vehicle}
+          mechanics={mechanicNames}
+          onClose={() => setAddingService(false)}
+          onAdd={addService}
+        />
+      )}
     </div>
   );
 }
