@@ -46,3 +46,21 @@ export const mechanicPerformance: MechanicPerf[] = [
   { name: "Dasun Perera", jobsCompleted: 9, performance: 52 },
   { name: "Harsha Nimed", jobsCompleted: 5, performance: 25 },
 ];
+export type JobStatus = "Pending" | "In Progress" | "Completed";
+
+export type PendingJob = {
+  jobId: string;
+  vehicleId: string;
+  customer: string;
+  serviceType: string;
+  status: JobStatus;
+  mechanic: string;
+};
+
+export const pendingJobs: PendingJob[] = [
+  { jobId: "JC-0142", vehicleId: "CAB-4521", customer: "Kamal Perera", serviceType: "Engine Oil Change", status: "In Progress", mechanic: "John Deo" },
+  { jobId: "JC-0143", vehicleId: "CAF-2201", customer: "Nadeesha Silva", serviceType: "Brake Inspection", status: "Pending", mechanic: "David" },
+  { jobId: "JC-0144", vehicleId: "KJ-7712", customer: "Ruwan Jayasinghe", serviceType: "Full Service", status: "Pending", mechanic: "Dasun Perera" },
+  { jobId: "JC-0145", vehicleId: "CAA-9090", customer: "Ishara Fernando", serviceType: "Wheel Alignment", status: "In Progress", mechanic: "Harsha Nimed" },
+  { jobId: "JC-0146", vehicleId: "WP-3345", customer: "Saman Kumara", serviceType: "AC Repair", status: "Pending", mechanic: "Unassigned" },
+];

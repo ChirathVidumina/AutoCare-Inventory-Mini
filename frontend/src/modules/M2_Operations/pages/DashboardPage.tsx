@@ -2,6 +2,7 @@ import StatCard from "../components/StatCard";
 import { stats } from "../data/dashboardData";
 import RevenueChart from "../components/RevenueChart";
 import MechanicLeaderboard from "../components/MechanicLeaderboard";
+import RecentJobCards from "../components/RecentJobCards";
 
 export default function DashboardPage() {
   return (
@@ -19,6 +20,9 @@ export default function DashboardPage() {
           <RevenueChart />
         </div>
                 <MechanicLeaderboard />
+      </div>
+            <div className="mt-6">
+        <RecentJobCards />
       </div>
     </div>
   );
