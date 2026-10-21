@@ -1,5 +1,7 @@
 import { jobCards } from "../data/jobCardsData";
 import JobCardsTable from "../components/JobCardsTable";
+import { Link } from "react-router-dom";
+import { Plus } from "lucide-react";
 
 function SummaryCard({ label, value, highlight = false }: { label: string; value: number; highlight?: boolean }) {
   return (
@@ -21,10 +23,20 @@ export default function JobCardsPage() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-semibold text-slate-900">All Job Cards</h1>
-      <p className="text-sm text-slate-500">
-        Track every vehicle in the workshop, from open to invoiced
-      </p>
+            <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-900">All Job Cards</h1>
+          <p className="text-sm text-slate-500">
+            Track every vehicle in the workshop, from open to invoiced
+          </p>
+        </div>
+        <Link
+          to="/job-cards/new"
+          className="inline-flex items-center gap-2 rounded-lg bg-blue-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800"
+        >
+          <Plus size={18} /> New Job Card
+        </Link>
+      </div>
 
       <div className="mt-6 grid grid-cols-2 gap-5 md:grid-cols-3 xl:grid-cols-5">
         <SummaryCard label="Total Job Cards" value={total} />

@@ -37,6 +37,8 @@ export default function AppRoutes() {
 
         <Route path="dashboard" element={<DashboardPage />} />
            <Route path="job-cards" element={<JobCardsPage />} />
+           <Route path="job-cards/new" element={<PlaceholderPage title="Create Job Card" />} />
+           <Route path="job-cards/:id" element={<PlaceholderPage title="Job Card Details" />} />
 
         {pages.map((page) => (
           <Route
