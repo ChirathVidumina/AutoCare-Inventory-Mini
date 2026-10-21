@@ -1,4 +1,5 @@
 import { jobCards } from "../data/jobCardsData";
+import JobCardsTable from "../components/JobCardsTable";
 
 function SummaryCard({ label, value, highlight = false }: { label: string; value: number; highlight?: boolean }) {
   return (
@@ -32,6 +33,7 @@ export default function JobCardsPage() {
         <SummaryCard label="Completed" value={completed} />
         <SummaryCard label="High Priority Active" value={highPriorityOpen} highlight />
       </div>
+      <JobCardsTable />
     </div>
   );
 }
