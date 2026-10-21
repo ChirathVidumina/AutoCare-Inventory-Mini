@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   jobCards,
+  getJobCardTotals,
   type JobCardStatus,
   type Priority,
 } from "../data/jobCardsData";
@@ -164,7 +165,7 @@ export default function JobCardsTable() {
                   <div className="text-xs text-slate-500">{job.plateNo}</div>
                 </td>
                 <td className="px-4 py-3">
-                  {job.services} {job.services === 1 ? "service" : "services"}
+                     {job.services.length} {job.services.length === 1 ? "service" : "services"}
                 </td>
                 <td
                   className={`px-4 py-3 ${
@@ -185,7 +186,7 @@ export default function JobCardsTable() {
                 </td>
                 <td className="px-4 py-3">{job.createdAt}</td>
                 <td className="px-4 py-3 text-right">
-                  Rs {job.total.toLocaleString()}
+                Rs {getJobCardTotals(job).grandTotal.toLocaleString()}
                 </td>
                 <td className="px-4 py-3">
                   <Link
