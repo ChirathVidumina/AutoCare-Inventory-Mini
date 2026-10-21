@@ -4,7 +4,7 @@ import MainLayout from "../components/layout/MainLayout";
 function PlaceholderPage({ title }: { title: string }) {
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-semibold text-slate-800">
+      <h1 className="text-2xl font-semibold text-slate-900">
         {title}
       </h1>
     </div>
@@ -13,12 +13,14 @@ function PlaceholderPage({ title }: { title: string }) {
 
 const pages = [
   { path: "dashboard", title: "Dashboard" },
+  { path: "video-assistance", title: "Video Assistance" },
   { path: "job-cards", title: "Job Cards" },
   { path: "customers", title: "Customer Management" },
   { path: "categories", title: "Service Categories" },
   { path: "inventory", title: "Inventory" },
   { path: "billing", title: "Billing" },
   { path: "staff", title: "Staff" },
+  { path: "mechanics", title: "Mechanic Management" },
   { path: "reports", title: "Reports" },
   { path: "notifications", title: "Notifications" },
   { path: "settings", title: "Settings" },

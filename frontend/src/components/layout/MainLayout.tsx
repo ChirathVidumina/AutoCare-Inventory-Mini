@@ -10,16 +10,29 @@ import {
   ChartNoAxesCombined,
   Bell,
   Settings,
+  Video,
+  Wrench,
 } from "lucide-react";
 
 const menuItems = [
   { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+
+  { name: "Video Assist", path: "/video-assistance", icon: Video },
+
   { name: "Job Card", path: "/job-cards", icon: ClipboardList },
+
   { name: "Customer", path: "/customers", icon: Users },
+
   { name: "Category", path: "/categories", icon: Shapes },
+
   { name: "Inventory", path: "/inventory", icon: Archive },
+
   { name: "Billing", path: "/billing", icon: Receipt },
+
   { name: "Staff", path: "/staff", icon: Network },
+
+  { name: "Mechanic", path: "/mechanics", icon: Wrench },
+
   { name: "Reports", path: "/reports", icon: ChartNoAxesCombined },
 ];
 
