@@ -75,6 +75,20 @@ export function getJobCardById(id: string | undefined) {
   return jobCards.find((j) => j.id === id);
 }
 
+/** Next free job card number, e.g. "JC-0147". */
+export function nextJobCardId() {
+  const highest = Math.max(...jobCards.map((j) => Number(j.id.replace("JC-", ""))));
+  return `JC-${String(highest + 1).padStart(4, "0")}`;
+}
+
+/**
+ * TEMPORARY: keeps a new job card in memory (lost on page refresh).
+ * When the backend is ready, this becomes a POST request to the API.
+ */
+export function addJobCard(job: JobCard) {
+  jobCards.unshift(job); // newest first
+}
+
 export const jobCards: JobCard[] = [
   {
     id: "JC-0146", createdAt: "2026-10-21", createdTime: "11:40", priority: "Normal", status: "Open",
