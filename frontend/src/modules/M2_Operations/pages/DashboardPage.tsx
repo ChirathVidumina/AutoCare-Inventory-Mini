@@ -1,6 +1,7 @@
 import StatCard from "../components/StatCard";
 import { stats } from "../data/dashboardData";
 import RevenueChart from "../components/RevenueChart";
+import MechanicLeaderboard from "../components/MechanicLeaderboard";
 
 export default function DashboardPage() {
   return (
@@ -17,7 +18,7 @@ export default function DashboardPage() {
         <div className="xl:col-span-2">
           <RevenueChart />
         </div>
-        {/* Mechanic Performance goes here next */}
+                <MechanicLeaderboard />
       </div>
     </div>
   );

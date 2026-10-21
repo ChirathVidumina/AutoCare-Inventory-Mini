@@ -33,3 +33,16 @@ export const dailyRevenue: RevenuePoint[] = [
   { label: "Sat", amount: 13800 },
   { label: "Sun", amount: 4300 },
 ];
+
+export type MechanicPerf = {
+  name: string;
+  jobsCompleted: number;
+  performance: number; // 0–100, e.g. tasks finished on time
+};
+
+export const mechanicPerformance: MechanicPerf[] = [
+  { name: "John Deo", jobsCompleted: 25, performance: 92 },
+  { name: "David", jobsCompleted: 18, performance: 80 },
+  { name: "Dasun Perera", jobsCompleted: 9, performance: 52 },
+  { name: "Harsha Nimed", jobsCompleted: 5, performance: 25 },
+];
