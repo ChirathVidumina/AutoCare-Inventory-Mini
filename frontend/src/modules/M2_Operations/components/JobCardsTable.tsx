@@ -6,7 +6,10 @@ import {
   type JobCardStatus,
   type Priority,
 } from "../data/jobCardsData";
-import { Search } from "lucide-react";
+import { Download, Search } from "lucide-react";
+
+// wraps a value in quotes for CSV, so commas and quotes inside it don't break the columns
+const csvCell = (value: string | number) => `"${String(value).replace(/"/g, '""')}"`;
 
 type Tab = "All" | JobCardStatus;
 const tabs: Tab[] = ["All", "Open", "In Progress", "Completed", "Invoiced"];
@@ -62,6 +65,33 @@ export default function JobCardsTable() {
 
     return matchesTab && matchesPriority && matchesMechanic && matchesSearch;
   });
+
+  // downloads the rows you can currently see (tabs, search and filters applied)
+  const exportCsv = () => {
+    const header = ["Job Card", "Customer", "Phone", "Vehicle", "Plate", "Services", "Lead Mechanic", "Priority", "Status", "Created", "Total (LKR)"];
+    const rows = visible.map((j) => [
+      j.id,
+      j.customer,
+      j.customerInfo.phone,
+      j.vehicle,
+      j.plateNo,
+      j.services.length,
+      j.mechanic,
+      j.priority,
+      j.status,
+      j.createdAt,
+      getJobCardTotals(j).grandTotal,
+    ]);
+    const csv = [header, ...rows].map((row) => row.map(csvCell).join(",")).join("\r\n");
+
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `job-cards-${new Date().toLocaleDateString("en-CA")}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -136,6 +166,15 @@ export default function JobCardsTable() {
             Clear filters
           </button>
         )}
+
+        <button
+          type="button"
+          onClick={exportCsv}
+          disabled={visible.length === 0}
+          className="ml-auto inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-slate-400"
+        >
+          <Download size={16} /> Export
+        </button>
       </div>
 
       {/* Table */}

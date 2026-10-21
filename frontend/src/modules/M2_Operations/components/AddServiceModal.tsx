@@ -14,6 +14,7 @@ type Props = {
   jobId: string;
   vehicle: string;
   mechanics: string[];
+  initial?: ServiceItem; // when given, the pop-up edits this service instead of adding a new one
   onClose: () => void;
   onAdd: (service: ServiceItem, parts: PartItem[]) => void;
 };
@@ -23,14 +24,15 @@ const inputClass =
 const labelClass = "text-sm font-medium text-slate-700";
 const sectionTitle = "text-xs font-semibold uppercase tracking-wider text-blue-700";
 
-export default function AddServiceModal({ jobId, vehicle, mechanics, onClose, onAdd }: Props) {
-  const [description, setDescription] = useState("");
-  const [type, setType] = useState("");
-  const [status, setStatus] = useState<ServiceStatus>("Pending");
-  const [estHours, setEstHours] = useState("");
-  const [actualHours, setActualHours] = useState("");
-  const [labourCost, setLabourCost] = useState("");
-  const [mechanic, setMechanic] = useState("Unassigned");
+export default function AddServiceModal({ jobId, vehicle, mechanics, initial, onClose, onAdd }: Props) {
+  const isEditing = initial !== undefined;
+  const [description, setDescription] = useState(initial?.description ?? "");
+  const [type, setType] = useState(initial?.type ?? "");
+  const [status, setStatus] = useState<ServiceStatus>(initial?.status ?? "Pending");
+  const [estHours, setEstHours] = useState(initial ? String(initial.estHours) : "");
+  const [actualHours, setActualHours] = useState(initial ? String(initial.actualHours) : "");
+  const [labourCost, setLabourCost] = useState(initial ? String(initial.labourCost) : "");
+  const [mechanic, setMechanic] = useState(initial?.mechanic ?? "Unassigned");
   const [partRows, setPartRows] = useState<PartRow[]>([{ partNo: "", qty: 1 }]);
   const [errors, setErrors] = useState<string[]>([]);
 
@@ -75,7 +77,7 @@ export default function AddServiceModal({ jobId, vehicle, mechanics, onClose, on
 
     onAdd(
       {
-        id: crypto.randomUUID(),
+        id: initial?.id ?? crypto.randomUUID(),
         description: description.trim(),
         type,
         mechanic,
@@ -84,7 +86,7 @@ export default function AddServiceModal({ jobId, vehicle, mechanics, onClose, on
         actualHours: Number(actualHours) || 0,
         labourCost: Number(labourCost),
       },
-      parts
+      isEditing ? [] : parts
     );
   };
 
@@ -105,7 +107,7 @@ export default function AddServiceModal({ jobId, vehicle, mechanics, onClose, on
         <div className="flex items-start justify-between border-b border-slate-200 px-6 py-4">
           <div>
             <h2 id="add-service-title" className="text-xl font-bold text-slate-900">
-              Add New Service
+              {isEditing ? "Edit Service" : "Add New Service"}
             </h2>
             <p className="text-xs text-slate-500">
               Job Card #{jobId} · {vehicle}
@@ -194,7 +196,8 @@ export default function AddServiceModal({ jobId, vehicle, mechanics, onClose, on
           </div>
         </div>
 
-        {/* Parts required */}
+        {/* Parts required (only when adding; parts are edited in the parts table) */}
+        {!isEditing && (
         <div className="space-y-3 px-6 py-5">
           <p className={sectionTitle}>Parts required</p>
           <div className="rounded-xl bg-slate-100 p-4">
@@ -245,6 +248,7 @@ export default function AddServiceModal({ jobId, vehicle, mechanics, onClose, on
             </button>
           </div>
         </div>
+        )}
 
         {/* Footer */}
         <div className="flex justify-end gap-3 border-t border-slate-200 px-6 py-4">
@@ -259,7 +263,7 @@ export default function AddServiceModal({ jobId, vehicle, mechanics, onClose, on
             type="submit"
             className="inline-flex items-center gap-2 rounded-lg bg-blue-900 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-800"
           >
-            <Plus size={16} /> Add Service
+            <Plus size={16} /> {isEditing ? "Save Service" : "Add Service"}
           </button>
         </div>
       </form>

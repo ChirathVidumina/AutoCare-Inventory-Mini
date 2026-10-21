@@ -1,0 +1,14 @@
+/* Only used when printing a job card: hide the app around it so the paper shows just the job card. */
+@media print {
+  aside {
+    display: none !important;
+  }
+  body,
+  main {
+    background: white !important;
+  }
+  section {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+}

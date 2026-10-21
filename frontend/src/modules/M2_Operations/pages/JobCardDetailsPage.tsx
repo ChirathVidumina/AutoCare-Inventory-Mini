@@ -2,7 +2,7 @@ import { useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft, Car, CheckCircle2, ClipboardList, History, Mail, MapPin, Package,
-  Pencil, Phone, Plus, Receipt, Send, Trash2, User, Wrench,
+  Pencil, Phone, Plus, Printer, Receipt, Save, Send, Share2, Trash2, User, Wrench,
 } from "lucide-react";
 import {
   getJobCardById,
@@ -18,6 +18,8 @@ import {
 import { mechanicPerformance } from "../data/dashboardData";
 import InspectionPhotos from "../components/InspectionPhotos";
 import AddServiceModal from "../components/AddServiceModal";
+import AddPartModal from "../components/AddPartModal";
+import "./jobCardPrint.css";
 
 const statusStyles: Record<JobCardStatus, string> = {
   Open: "bg-blue-100 text-blue-800",
@@ -100,6 +102,11 @@ function JobCardDetails({ job }: { job: JobCard }) {
   const [leadMechanic, setLeadMechanic] = useState(job.mechanic);
   const [editingMechanic, setEditingMechanic] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [note, setNote] = useState(job.mechanicNote);
+  const [editingService, setEditingService] = useState<ServiceItem | null>(null);
+  const [addingPart, setAddingPart] = useState(false);
+  const [editingPart, setEditingPart] = useState<PartItem | null>(null);
+  const [shareMessage, setShareMessage] = useState("");
 
   
   const [status, setStatus] = useState(job.status);
@@ -144,14 +151,72 @@ function JobCardDetails({ job }: { job: JobCard }) {
     setAddingService(false);
   };
 
+  const saveEditedService = (updated: ServiceItem) => {
+    setServices(services.map((s) => (s.id === updated.id ? updated : s)));
+    if (status === "Open" && updated.status !== "Pending") setStatus("In Progress");
+    setEditingService(null);
+  };
+
+  // a new part is merged with the same part if it is already on the job card
+  const saveNewPart = (part: PartItem) => {
+    const alreadyThere = parts.some((p) => p.partNo === part.partNo);
+    setParts(
+      alreadyThere
+        ? parts.map((p) => (p.partNo === part.partNo ? { ...p, qty: p.qty + part.qty } : p))
+        : [...parts, part]
+    );
+    setAddingPart(false);
+  };
+
+  const saveEditedPart = (updated: PartItem) => {
+    setParts(parts.map((p) => (p.partNo === updated.partNo ? updated : p)));
+    setEditingPart(null);
+  };
+
+  const shareLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShareMessage("Link copied to clipboard");
+    } catch {
+      setShareMessage("Could not copy the link");
+    }
+    setTimeout(() => setShareMessage(""), 2500);
+  };
+
   // other job cards for the same vehicle (same plate number)
   const history = jobCards.filter((j) => j.plateNo === job.plateNo && j.id !== job.id);
 
   return (
     <div className="p-8">
-      <Link to="/job-cards" className={linkButton}>
-        <ArrowLeft size={16} /> Back to job cards
-      </Link>
+      <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
+        <Link to="/job-cards" className={linkButton}>
+          <ArrowLeft size={16} /> Back to job cards
+        </Link>
+        <div className="flex flex-wrap items-center gap-2">
+          {shareMessage && <span role="status" className="text-sm text-green-700">{shareMessage}</span>}
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            <Printer size={16} /> Print
+          </button>
+          <button
+            type="button"
+            onClick={shareLink}
+            className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+          >
+            <Share2 size={16} /> Share
+          </button>
+          {/* TODO: send changes to the backend once it is ready */}
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 rounded-lg bg-yellow-400 px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-yellow-300"
+          >
+            <Save size={16} /> Save Changes
+          </button>
+        </div>
+      </div>
 
       {/* Header */}
       <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -260,7 +325,7 @@ function JobCardDetails({ job }: { job: JobCard }) {
           icon={<Wrench size={18} />}
           action={
             <button type="button" onClick={() => setEditingMechanic(!editingMechanic)} className={linkButton}>
-              <Pencil size={14} /> {editingMechanic ? "Done" : "Change"}
+              <Pencil size={14} /> {editingMechanic ? "Done" : "Edit"}
             </button>
           }
         >
@@ -290,9 +355,20 @@ function JobCardDetails({ job }: { job: JobCard }) {
           <p className="mt-1 text-sm text-slate-700">{job.issue}</p>
 
           <p className="mt-4 text-xs font-semibold text-slate-500">Job note</p>
-          <p className="mt-1 rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700">
-            {job.mechanicNote || "No notes for the mechanic."}
-          </p>
+          {editingMechanic ? (
+            <textarea
+              aria-label="Job note"
+              rows={3}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Add job notes for the mechanic..."
+              className="mt-1 w-full resize-y rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+            />
+          ) : (
+            <p className="mt-1 whitespace-pre-line rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-700">
+              {note || "No notes for the mechanic."}
+            </p>
+          )}
         </InfoCard>
       </div>
 
@@ -307,7 +383,7 @@ function JobCardDetails({ job }: { job: JobCard }) {
                 <button
                   type="button"
                   onClick={() => setAddingService(true)}
-                  className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100"
+                  className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100 print:hidden"
                 >
                   <Plus size={14} /> Add Service
                 </button>
@@ -362,6 +438,14 @@ function JobCardDetails({ job }: { job: JobCard }) {
                         <td className="px-3 py-2.5 text-right">
                           <button
                             type="button"
+                            onClick={() => setEditingService(s)}
+                            aria-label={`Edit ${s.description}`}
+                            className="mr-3 text-slate-400 hover:text-blue-700"
+                          >
+                            <Pencil size={16} />
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => removeService(s.id)}
                             aria-label={`Remove ${s.description}`}
                             className="text-slate-400 hover:text-red-600"
@@ -384,7 +468,21 @@ function JobCardDetails({ job }: { job: JobCard }) {
             </div>
           </InfoCard>
 
-          <InfoCard title="Parts Requisition" icon={<Package size={18} />}>
+          <InfoCard
+            title="Parts Requisition"
+            icon={<Package size={18} />}
+            action={
+              !isClosed && (
+                <button
+                  type="button"
+                  onClick={() => setAddingPart(true)}
+                  className="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 hover:bg-blue-100 print:hidden"
+                >
+                  <Plus size={14} /> Add Part
+                </button>
+              )
+            }
+          >
             <div className="overflow-x-auto">
               <table className="w-full min-w-[640px] text-left text-sm">
                 <thead>
@@ -407,6 +505,14 @@ function JobCardDetails({ job }: { job: JobCard }) {
                       <td className="px-3 py-2.5 text-right font-medium">{money(p.qty * p.unitPrice)}</td>
                       {!isClosed && (
                         <td className="px-3 py-2.5 text-right">
+                          <button
+                            type="button"
+                            onClick={() => setEditingPart(p)}
+                            aria-label={`Edit ${p.name}`}
+                            className="mr-3 text-slate-400 hover:text-blue-700"
+                          >
+                            <Pencil size={16} />
+                          </button>
                           <button
                             type="button"
                             onClick={() => removePart(p.partNo)}
@@ -484,6 +590,36 @@ function JobCardDetails({ job }: { job: JobCard }) {
       </div>
       <InspectionPhotos readOnly={isClosed} />
       
+      {editingService && (
+        <AddServiceModal
+          jobId={job.id}
+          vehicle={job.vehicle}
+          mechanics={mechanicNames}
+          initial={editingService}
+          onClose={() => setEditingService(null)}
+          onAdd={saveEditedService}
+        />
+      )}
+
+      {addingPart && (
+        <AddPartModal
+          jobId={job.id}
+          vehicle={job.vehicle}
+          onClose={() => setAddingPart(false)}
+          onSave={saveNewPart}
+        />
+      )}
+
+      {editingPart && (
+        <AddPartModal
+          jobId={job.id}
+          vehicle={job.vehicle}
+          initial={editingPart}
+          onClose={() => setEditingPart(null)}
+          onSave={saveEditedPart}
+        />
+      )}
+
       {addingService && (
         <AddServiceModal
           jobId={job.id}
