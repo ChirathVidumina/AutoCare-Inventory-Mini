@@ -1,6 +1,7 @@
 import { jobCards } from "../data/jobCardsData";
 import JobCardsTable from "../components/JobCardsTable";
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import CreateJobCardModal from "../components/CreateJobCardModal";
 import { Plus } from "lucide-react";
 
 function SummaryCard({ label, value, highlight = false }: { label: string; value: number; highlight?: boolean }) {
@@ -13,6 +14,8 @@ function SummaryCard({ label, value, highlight = false }: { label: string; value
 }
 
 export default function JobCardsPage() {
+  const [creating, setCreating] = useState(false);
+
   const total = jobCards.length;
   const open = jobCards.filter((j) => j.status === "Open").length;
   const inProgress = jobCards.filter((j) => j.status === "In Progress").length;
@@ -30,12 +33,13 @@ export default function JobCardsPage() {
             Track every vehicle in the workshop, from open to invoiced
           </p>
         </div>
-        <Link
-          to="/job-cards/new"
+        <button
+          type="button"
+          onClick={() => setCreating(true)}
           className="inline-flex items-center gap-2 rounded-lg bg-blue-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-800"
         >
           <Plus size={18} /> New Job Card
-        </Link>
+        </button>
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-5 md:grid-cols-3 xl:grid-cols-5">
@@ -46,6 +50,8 @@ export default function JobCardsPage() {
         <SummaryCard label="High Priority Active" value={highPriorityOpen} highlight />
       </div>
       <JobCardsTable />
+
+      {creating && <CreateJobCardModal onClose={() => setCreating(false)} />}
     </div>
   );
 }
