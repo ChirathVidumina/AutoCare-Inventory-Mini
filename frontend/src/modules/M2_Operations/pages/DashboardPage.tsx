@@ -1,5 +1,6 @@
 import StatCard from "../components/StatCard";
 import { stats } from "../data/dashboardData";
+import RevenueChart from "../components/RevenueChart";
 
 export default function DashboardPage() {
   return (
@@ -11,6 +12,12 @@ export default function DashboardPage() {
         {stats.map((stat) => (
           <StatCard key={stat.title} {...stat} />
         ))}
+      </div>
+            <div className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-3">
+        <div className="xl:col-span-2">
+          <RevenueChart />
+        </div>
+        {/* Mechanic Performance goes here next */}
       </div>
     </div>
   );
