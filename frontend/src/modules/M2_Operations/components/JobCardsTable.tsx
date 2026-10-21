@@ -5,6 +5,7 @@ import {
   type JobCardStatus,
   type Priority,
 } from "../data/jobCardsData";
+import { Search } from "lucide-react";
 
 type Tab = "All" | JobCardStatus;
 const tabs: Tab[] = ["All", "Open", "In Progress", "Completed", "Invoiced"];
@@ -25,15 +26,41 @@ const priorityStyles: Record<Priority, string> = {
 export default function JobCardsTable() {
   const [activeTab, setActiveTab] = useState<Tab>("All");
 
+    const [search, setSearch] = useState("");
+  const [priority, setPriority] = useState<"All" | Priority>("All");
+  const [mechanic, setMechanic] = useState("All");
+
+  // unique mechanic names for the dropdown, A–Z
+  const mechanics = [...new Set(jobCards.map((j) => j.mechanic))].sort();
+
+  const hasFilters = search !== "" || priority !== "All" || mechanic !== "All";
+
+  const clearFilters = () => {
+    setSearch("");
+    setPriority("All");
+    setMechanic("All");
+  };
+
   const countFor = (tab: Tab) =>
     tab === "All"
       ? jobCards.length
       : jobCards.filter((j) => j.status === tab).length;
 
-  const visible =
-    activeTab === "All"
-      ? jobCards
-      : jobCards.filter((j) => j.status === activeTab);
+    const query = search.trim().toLowerCase();
+
+  const visible = jobCards.filter((j) => {
+    const matchesTab = activeTab === "All" || j.status === activeTab;
+    const matchesPriority = priority === "All" || j.priority === priority;
+    const matchesMechanic = mechanic === "All" || j.mechanic === mechanic;
+    const matchesSearch =
+      query === "" ||
+      j.id.toLowerCase().includes(query) ||
+      j.customer.toLowerCase().includes(query) ||
+      j.vehicle.toLowerCase().includes(query) ||
+      j.plateNo.toLowerCase().includes(query);
+
+    return matchesTab && matchesPriority && matchesMechanic && matchesSearch;
+  });
 
   return (
     <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
@@ -53,6 +80,61 @@ export default function JobCardsTable() {
             {tab} ({countFor(tab)})
           </button>
         ))}
+      </div>
+
+            {/* Search and filters */}
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <div className="relative w-full sm:w-80">
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+          />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search job ID, customer, vehicle or plate"
+            className="w-full rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100"
+          />
+        </div>
+
+        <label className="flex items-center gap-2 text-sm text-slate-600">
+          Priority
+          <select
+            value={priority}
+            onChange={(e) => setPriority(e.target.value as "All" | Priority)}
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+          >
+            <option>All</option>
+            <option>High</option>
+            <option>Normal</option>
+            <option>Low</option>
+          </select>
+        </label>
+
+        <label className="flex items-center gap-2 text-sm text-slate-600">
+          Mechanic
+          <select
+            value={mechanic}
+            onChange={(e) => setMechanic(e.target.value)}
+            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+          >
+            <option>All</option>
+            {mechanics.map((m) => (
+              <option key={m}>{m}</option>
+            ))}
+          </select>
+        </label>
+
+        {hasFilters && (
+          <button
+            type="button"
+            onClick={clearFilters}
+            className="text-sm font-medium text-blue-600 hover:underline"
+          >
+            Clear filters
+          </button>
+        )}
       </div>
 
       {/* Table */}
