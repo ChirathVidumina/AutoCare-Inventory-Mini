@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "../components/layout/MainLayout";
 import DashboardPage from "../modules/M2_Operations/pages/DashboardPage";
 import JobCardsPage from "../modules/M2_Operations/pages/JobCardsPage";
+import JobCardDetailsPage from "../modules/M2_Operations/pages/JobCardDetailsPage";
 
 function PlaceholderPage({ title }: { title: string }) {
   return (
@@ -38,7 +39,7 @@ export default function AppRoutes() {
         <Route path="dashboard" element={<DashboardPage />} />
            <Route path="job-cards" element={<JobCardsPage />} />
            <Route path="job-cards/new" element={<PlaceholderPage title="Create Job Card" />} />
-           <Route path="job-cards/:id" element={<PlaceholderPage title="Job Card Details" />} />
+            <Route path="job-cards/:id" element={<JobCardDetailsPage />} />
 
         {pages.map((page) => (
           <Route

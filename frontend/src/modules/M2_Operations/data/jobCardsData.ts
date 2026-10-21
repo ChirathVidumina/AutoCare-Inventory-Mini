@@ -199,4 +199,22 @@ export const jobCards: JobCard[] = [
     ],
     parts: [{ partNo: "DF-4M41", name: "Diesel fuel filter", qty: 1, unitPrice: 4600 }],
   },
+  {
+    id: "JC-0121", createdAt: "2026-07-14", createdTime: "10:00", priority: "Normal", status: "Invoiced",
+    issue: "Scheduled 90,000 km service.",
+    customer: "Kamal Perera",
+    customerInfo: { phone: "077 852 7896", email: "kamal.perera@gmail.com", address: "42, John Road, Kurunegala", since: 2019 },
+    vehicle: "Toyota Axio", plateNo: "CAB-4521",
+    vehicleInfo: { year: 2015, colour: "White", vin: "NKE165-7021456", mileage: 90120, fuelLevel: 60 },
+    mechanic: "John Deo", mechanicNote: "",
+    services: [
+      { id: "S1", description: "Engine Oil Change", type: "Routine Maintenance", mechanic: "John Deo", status: "Completed", estHours: 0.5, actualHours: 0.5, labourCost: 2500 },
+      { id: "S2", description: "Brake Pad Replacement", type: "Repair", mechanic: "David", status: "Completed", estHours: 1, actualHours: 1, labourCost: 4500 },
+    ],
+    parts: [
+      { partNo: "EO-5W30", name: "Engine oil 5W-30 (4L)", qty: 1, unitPrice: 14500 },
+      { partNo: "OF-112", name: "Oil filter", qty: 1, unitPrice: 2200 },
+      { partNo: "BP-F21", name: "Front brake pad set", qty: 1, unitPrice: 9800 },
+    ],
+  },
 ];
