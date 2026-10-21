@@ -14,6 +14,7 @@ import {
   type ServiceStatus,
 } from "../data/jobCardsData";
 import { mechanicPerformance } from "../data/dashboardData";
+import InspectionPhotos from "../components/InspectionPhotos";
 
 const statusStyles: Record<JobCardStatus, string> = {
   Open: "bg-blue-100 text-blue-800",
@@ -457,6 +458,7 @@ function JobCardDetails({ job }: { job: JobCard }) {
           </InfoCard>
         </div>
       </div>
+      <InspectionPhotos readOnly={isClosed} />
     </div>
   );
 }
