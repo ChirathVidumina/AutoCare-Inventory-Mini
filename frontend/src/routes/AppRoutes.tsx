@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "../components/layout/MainLayout";
-   import InvoiceListPage from "../modules/M4_BookingBilling/InvoiceListPage";
+import InvoiceListPage from "../modules/M4_BookingBilling/InvoiceListPage";
+import CreateInvoicePage from "../modules/M4_BookingBilling/CreateInvoicePage";
+import InvoiceViewPage from "../modules/M4_BookingBilling/InvoiceViewPage";
 
 function PlaceholderPage({ title }: { title: string }) {
   return (
@@ -37,6 +39,9 @@ export default function AppRoutes() {
         />
 
            <Route path="billing" element={<InvoiceListPage />} />
+
+          <Route path="billing/new" element={<CreateInvoicePage />} />
+          <Route path="billing/:invoiceId" element={<InvoiceViewPage />} />
 
           {pages.filter((page) => page.path !== "billing").map((page) => (
           <Route
