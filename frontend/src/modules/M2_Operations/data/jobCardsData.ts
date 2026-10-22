@@ -202,7 +202,7 @@ export const jobCards: JobCard[] = [
     id: "JC-0139", createdAt: "2026-10-17", createdTime: "09:30", priority: "Normal", status: "Invoiced",
     issue: "Engine oil leak and weak battery.",
     customer: "Amila Prasad",
-    customerInfo: { phone: "077 852 7896", email: "amila@gmail.com", address: "42, John Road, Kurunegala", since: 2019 },
+    customerInfo: { phone: "071 902 3344", email: "amila@gmail.com", address: "15, Lake Road, Kurunegala", since: 2019 },
     vehicle: "Toyota Crown", plateNo: "ABC-2172",
     vehicleInfo: { year: 2010, colour: "Silver Metallic", vin: "GRS200-1234678", mileage: 45210, fuelLevel: 72 },
     mechanic: "John Deo", mechanicNote: "",

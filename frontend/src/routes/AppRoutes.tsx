@@ -10,10 +10,12 @@ import ForgotPasswordPage from "../modules/M1_Authentication/pages/ForgotPasswor
 import ProfilePage from "../modules/M1_Authentication/pages/ProfilePage";
 import VideoAssistancePage from "../modules/M1_Authentication/pages/VideoAssistancePage";
 
-// M2 - Admin Dashboard and Job Cards
+// M2 - Dashboard, Job Cards and Customers
 import DashboardPage from "../modules/M2_Operations/pages/DashboardPage";
 import JobCardsPage from "../modules/M2_Operations/pages/JobCardsPage";
 import JobCardDetailsPage from "../modules/M2_Operations/pages/JobCardDetailsPage";
+import CustomersPage from "../modules/M2_Operations/pages/CustomersPage";
+import CustomerProfilePage from "../modules/M2_Operations/pages/CustomerProfilePage";
 
 // M3 - Service Catalogue
 import CategoryList from "../modules/M3_ServiceCatalogue/pages/CategoryList";
@@ -26,7 +28,7 @@ import InvoiceListPage from "../modules/M4_BookingBilling/InvoiceListPage";
 import InventoryPage from "../modules/M5_Inventory/InventoryPage";
 import StaffPage from "../modules/M5_Inventory/staff/StaffPage";
 
-// Placeholder for unfinished modules
+// Placeholder for unfinished pages
 function PlaceholderPage({ title }: { title: string }) {
   return (
     <div className="p-8">
@@ -38,7 +40,6 @@ function PlaceholderPage({ title }: { title: string }) {
 }
 
 const pages = [
-  { path: "customers", title: "Customer Management" },
   { path: "mechanics", title: "Mechanic Management" },
   { path: "reports", title: "Reports" },
   { path: "notifications", title: "Notifications" },
@@ -76,7 +77,7 @@ export default function AppRoutes() {
           element={<VideoAssistancePage />}
         />
 
-        {/* M2 - ADMIN DASHBOARD */}
+        {/* M2 - DASHBOARD */}
         <Route
           path="dashboard"
           element={<DashboardPage />}
@@ -92,6 +93,18 @@ export default function AppRoutes() {
         <Route
           path="job-cards/:id"
           element={<JobCardDetailsPage />}
+        />
+
+        {/* M2 - CUSTOMERS LIST */}
+        <Route
+          path="customers"
+          element={<CustomersPage />}
+        />
+
+        {/* M2 - CUSTOMER PROFILE */}
+        <Route
+          path="customers/:id"
+          element={<CustomerProfilePage />}
         />
 
         {/* M3 - CATEGORY MANAGEMENT */}
@@ -118,7 +131,7 @@ export default function AppRoutes() {
           element={<InventoryPage />}
         />
 
-        {/* M5 - STAFF MANAGEMENT */}
+        {/* M5 - STAFF */}
         <Route
           path="staff"
           element={<StaffPage />}
