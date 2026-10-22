@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import {
-  CalendarClock, ChevronLeft, ChevronRight, Eye, ListFilter, Pencil, Plus, Search,
+  CalendarClock, CheckCircle2, ChevronLeft, ChevronRight, Eye, ListFilter, Pencil, Plus, Search,
   TrendingDown, TrendingUp, UserPlus, Users, Wrench,
 } from "lucide-react";
 import {
@@ -10,8 +10,10 @@ import {
   fullName,
   getCustomerStats,
   getCustomerVehicles,
+  type Customer,
   type CustomerStatus,
 } from "../data/customersData";
+import CustomerFormModal from "../components/CustomerFormModal";
 import { jobCards } from "../data/jobCardsData";
 
 // TODO: read these from the Booking module (M4) when it is ready
@@ -85,6 +87,17 @@ export default function CustomersPage() {
   const [sortOpen, setSortOpen] = useState(false);
   const [pageSize, setPageSize] = useState(8);
   const [page, setPage] = useState(1);
+  // null = closed, "new" = Add New Customer, a customer = Edit that customer
+  const [formFor, setFormFor] = useState<Customer | "new" | null>(null);
+  const [savedMessage, setSavedMessage] = useState<{ text: string; id: string } | null>(null);
+
+  const handleSaved = (saved: Customer) => {
+    setSavedMessage({
+      text: formFor === "new" ? `${fullName(saved)} was added as ${saved.id}.` : `${fullName(saved)}'s details were updated.`,
+      id: saved.id,
+    });
+    setFormFor(null);
+  };
 
   // one row per customer, with the numbers worked out from their job cards
   const rows = customers.map((c) => ({
@@ -141,9 +154,9 @@ export default function CustomersPage() {
           <h1 className="text-2xl font-bold text-slate-900">Customer Overview</h1>
           <p className="text-sm text-slate-500">Manage relationships and view each client's service history</p>
         </div>
-        {/* opens the Add Customer pop-up (next step) */}
         <button
           type="button"
+          onClick={() => setFormFor("new")}
           className="inline-flex items-center gap-2 rounded-lg bg-blue-900 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-800"
         >
           <Plus size={18} /> Add New Customer
@@ -156,6 +169,18 @@ export default function CustomersPage() {
         <SummaryCard label="Pending Bookings" value={PENDING_BOOKINGS_SAMPLE} icon={<CalendarClock size={20} />} trend={bookingTrend} />
         <SummaryCard label="New This Month" value={newThisMonth} icon={<UserPlus size={20} />} trend={newTrend} />
       </div>
+
+      {savedMessage && (
+        <p role="status" className="mt-6 flex flex-wrap items-center gap-2 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-800">
+          <CheckCircle2 size={18} /> {savedMessage.text}
+          <Link to={`/customers/${savedMessage.id}`} className="font-semibold underline">
+            View profile
+          </Link>
+          <button type="button" onClick={() => setSavedMessage(null)} className="ml-auto text-green-700 hover:underline">
+            Dismiss
+          </button>
+        </p>
+      )}
 
       {/* Search and sort */}
       <div className="mt-10 flex flex-wrap items-center gap-6">
@@ -255,9 +280,9 @@ export default function CustomersPage() {
                       >
                         <Eye size={18} />
                       </Link>
-                      {/* opens the Edit Customer pop-up (next step) */}
                       <button
                         type="button"
+                        onClick={() => setFormFor(customer)}
                         aria-label={`Edit ${fullName(customer)}`}
                         className="text-blue-800 hover:text-blue-600"
                       >
@@ -341,6 +366,14 @@ export default function CustomersPage() {
           </button>
         </nav>
       </div>
+
+      {formFor !== null && (
+        <CustomerFormModal
+          customer={formFor === "new" ? undefined : formFor}
+          onClose={() => setFormFor(null)}
+          onSaved={handleSaved}
+        />
+      )}
     </div>
   );
 }

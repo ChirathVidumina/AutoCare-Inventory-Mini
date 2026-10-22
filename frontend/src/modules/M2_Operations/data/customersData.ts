@@ -101,3 +101,59 @@ export function getCustomerStats(customerId: string) {
 
   return { visits: jobs.length, totalSpend, lastVisit, lastJob, lastServiceType, status };
 }
+
+export const vehicleMakes = [
+  "Toyota", "Honda", "Nissan", "Suzuki", "Mitsubishi", "Mazda", "Hyundai", "Kia",
+  "Micro", "Tata", "BMW", "Mercedes-Benz", "Audi", "Other",
+];
+
+/** Next free customer number, e.g. "CUS-0013". */
+export function nextCustomerId() {
+  const highest = Math.max(0, ...customers.map((c) => Number(c.id.replace("CUS-", ""))));
+  return `CUS-${String(highest + 1).padStart(4, "0")}`;
+}
+
+/** Finds the vehicle that already uses this plate (ignoring spaces and case). */
+export function findVehicleByPlate(plateNo: string) {
+  const clean = (p: string) => p.replace(/\s/g, "").toUpperCase();
+  return vehicles.find((v) => clean(v.plateNo) === clean(plateNo));
+}
+
+/*
+ * TEMPORARY: the functions below change the lists in memory (lost on page refresh).
+ * When the backend is ready, each one becomes an API request (POST / PUT).
+ */
+
+export function addCustomer(customer: Customer, vehicle: Vehicle) {
+  customers.push(customer);
+  vehicles.push(vehicle);
+}
+
+export function addVehicle(vehicle: Vehicle) {
+  vehicles.push(vehicle);
+}
+
+export function updateCustomer(updated: Customer) {
+  const index = customers.findIndex((c) => c.id === updated.id);
+  if (index === -1) return;
+  customers[index] = updated;
+
+  // keep the copies on this customer's job cards up to date
+  for (const job of getCustomerJobCards(updated.id)) {
+    job.customer = fullName(updated);
+    job.customerInfo = { ...job.customerInfo, phone: updated.phone, email: updated.email, address: updated.address };
+  }
+}
+
+export function updateVehicle(oldPlateNo: string, updated: Vehicle) {
+  const index = vehicles.findIndex((v) => v.plateNo === oldPlateNo);
+  if (index === -1) return;
+  vehicles[index] = updated;
+
+  // job cards find their vehicle by plate, so move them to the new plate too
+  for (const job of jobCards.filter((j) => j.plateNo === oldPlateNo)) {
+    job.plateNo = updated.plateNo;
+    job.vehicle = `${updated.make} ${updated.model}`;
+    job.vehicleInfo = { ...job.vehicleInfo, vin: updated.vin || job.vehicleInfo.vin, year: updated.year };
+  }
+}
