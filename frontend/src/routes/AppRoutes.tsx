@@ -3,6 +3,13 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import MainLayout from "../components/layout/MainLayout";
 
+// M1 - Authentication
+import AdminLoginPage from "../modules/M1_Authentication/pages/AdminLoginPage";
+import RegisterPage from "../modules/M1_Authentication/pages/RegisterPage";
+import ForgotPasswordPage from "../modules/M1_Authentication/pages/ForgotPasswordPage";
+import ProfilePage from "../modules/M1_Authentication/pages/ProfilePage";
+import VideoAssistancePage from "../modules/M1_Authentication/pages/VideoAssistancePage";
+
 // M2 - Admin Dashboard
 import DashboardPage from "../modules/M2_Operations/pages/DashboardPage";
 
@@ -13,10 +20,8 @@ import ServicesPackages from "../modules/M3_ServiceCatalogue/pages/ServicesPacka
 // M4 - Billing
 import InvoiceListPage from "../modules/M4_BookingBilling/InvoiceListPage";
 
-// M5 - Inventory Management
+// M5 - Inventory and Staff
 import InventoryPage from "../modules/M5_Inventory/InventoryPage";
-
-// M5 - Staff Management
 import StaffPage from "../modules/M5_Inventory/staff/StaffPage";
 
 function PlaceholderPage({ title }: { title: string }) {
@@ -30,7 +35,6 @@ function PlaceholderPage({ title }: { title: string }) {
 }
 
 const pages = [
-  { path: "video-assistance", title: "Video Assistance" },
   { path: "job-cards", title: "Job Cards" },
   { path: "customers", title: "Customer Management" },
   { path: "mechanics", title: "Mechanic Management" },
@@ -42,6 +46,15 @@ const pages = [
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* M1 - PUBLIC AUTHENTICATION PAGES */}
+      <Route path="login" element={<AdminLoginPage />} />
+      <Route path="register" element={<RegisterPage />} />
+      <Route
+        path="forgot-password"
+        element={<ForgotPasswordPage />}
+      />
+
+      {/* ADMIN / STAFF LAYOUT */}
       <Route element={<MainLayout />}>
         {/* DEFAULT PAGE */}
         <Route
@@ -49,7 +62,16 @@ export default function AppRoutes() {
           element={<Navigate to="/dashboard" replace />}
         />
 
-        {/* M2 - ADMIN DASHBOARD */}
+        {/* M1 - PROFILE */}
+        <Route path="profile" element={<ProfilePage />} />
+
+        {/* M1 - VIDEO ASSISTANCE */}
+        <Route
+          path="video-assistance"
+          element={<VideoAssistancePage />}
+        />
+
+        {/* M2 - DASHBOARD */}
         <Route
           path="dashboard"
           element={<DashboardPage />}
@@ -61,7 +83,7 @@ export default function AppRoutes() {
           element={<CategoryList />}
         />
 
-        {/* M3 - SERVICES & PACKAGES */}
+        {/* M3 - SERVICES AND PACKAGES */}
         <Route
           path="services-packages"
           element={<ServicesPackages />}
@@ -79,7 +101,7 @@ export default function AppRoutes() {
           element={<InventoryPage />}
         />
 
-        {/* M5 - STAFF MANAGEMENT */}
+        {/* M5 - STAFF */}
         <Route
           path="staff"
           element={<StaffPage />}
