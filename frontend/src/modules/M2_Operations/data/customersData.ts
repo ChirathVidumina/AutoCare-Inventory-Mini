@@ -21,8 +21,12 @@ export type Vehicle = {
   customerId: string; // the owner (foreign key to Customer.id)
 };
 
-/** In Service = a vehicle is in the workshop now; Active = visited in the last 6 months. */
-export type CustomerStatus = "In Service" | "Active" | "Inactive";
+/**
+ * Active   = one of their vehicles is being worked on now (job card In Progress)
+ * Pending  = a vehicle is booked in but work has not started (job card Open)
+ * Inactive = no vehicle in the workshop
+ */
+export type CustomerStatus = "Active" | "Pending" | "Inactive";
 
 export const customers: Customer[] = [
   { id: "CUS-0001", firstName: "Kamal", lastName: "Perera", phone: "077 852 7896", email: "kamal.perera@gmail.com", address: "42, John Road, Kurunegala", joinedAt: "2019-03-15" },
@@ -77,7 +81,6 @@ export function getCustomerJobCards(customerId: string) {
     .sort((a, b) => `${b.createdAt} ${b.createdTime}`.localeCompare(`${a.createdAt} ${a.createdTime}`));
 }
 
-const DAY = 24 * 60 * 60 * 1000;
 
 export function getCustomerStats(customerId: string) {
   const jobs = getCustomerJobCards(customerId);
@@ -87,8 +90,14 @@ export function getCustomerStats(customerId: string) {
   const lastVisit = jobs.length > 0 ? jobs[0].createdAt : null;
 
   let status: CustomerStatus = "Inactive";
-  if (jobs.some((j) => j.status === "Open" || j.status === "In Progress")) status = "In Service";
-  else if (lastVisit && Date.now() - new Date(`${lastVisit}T00:00:00`).getTime() <= 180 * DAY) status = "Active";
+  if (jobs.some((j) => j.status === "In Progress")) status = "Active";
+  else if (jobs.some((j) => j.status === "Open")) status = "Pending";
 
-  return { visits: jobs.length, totalSpend, lastVisit, status };
+  const lastJob = jobs.length > 0 ? jobs[0] : null;
+  // what was done (or requested) on the latest visit
+  const lastServiceType = lastJob
+    ? lastJob.services[0]?.description ?? lastJob.issue.split(":")[0]
+    : null;
+
+  return { visits: jobs.length, totalSpend, lastVisit, lastJob, lastServiceType, status };
 }
