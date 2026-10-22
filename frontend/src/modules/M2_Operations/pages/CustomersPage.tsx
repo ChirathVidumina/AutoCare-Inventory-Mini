@@ -10,7 +10,6 @@ import {
   vehicles,
   type CustomerStatus,
 } from "../data/customersData";
-import PageHeader from "../components/PageHeader";
 
 const PAGE_SIZE = 8;
 
@@ -76,14 +75,12 @@ export default function CustomersPage() {
   const pageRows = sorted.slice(firstIndex, firstIndex + PAGE_SIZE);
 
   return (
-    <div>
-      <PageHeader
-        title="Customer Overview"
-        subtitle="Manage relationships and view each client's service history"
-      />
-
-      <div className="p-8">
-      <div className="flex justify-end">
+    <div className="p-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Customer Overview</h1>
+          <p className="text-sm text-slate-500">Manage relationships and view each client's service history</p>
+        </div>
         {/* opens the Add Customer pop-up (next step) */}
         <button
           type="button"
@@ -234,7 +231,6 @@ export default function CustomersPage() {
           </nav>
         </div>
       </section>
-      </div>
     </div>
   );
 }
