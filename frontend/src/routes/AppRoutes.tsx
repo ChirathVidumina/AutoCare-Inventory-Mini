@@ -21,8 +21,11 @@ import CustomerProfilePage from "../modules/M2_Operations/pages/CustomerProfileP
 import CategoryList from "../modules/M3_ServiceCatalogue/pages/CategoryList";
 import ServicesPackages from "../modules/M3_ServiceCatalogue/pages/ServicesPackages";
 
-// M4 - Billing
+
+// M4 - Booking and Billing
 import InvoiceListPage from "../modules/M4_BookingBilling/InvoiceListPage";
+import CreateInvoicePage from "../modules/M4_BookingBilling/CreateInvoicePage";
+import InvoiceViewPage from "../modules/M4_BookingBilling/InvoiceViewPage";
 
 // M5 - Inventory and Staff
 import InventoryPage from "../modules/M5_Inventory/InventoryPage";
@@ -129,6 +132,9 @@ export default function AppRoutes() {
           path="billing"
           element={<InvoiceListPage />}
         />
+        <Route path="billing" element={<InvoiceListPage />} />
+        <Route path="billing/new" element={<CreateInvoicePage />} />
+        <Route path="billing/:invoiceId" element={<InvoiceViewPage />} />
 
         {/* M5 - INVENTORY */}
         <Route
