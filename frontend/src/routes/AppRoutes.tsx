@@ -64,6 +64,11 @@ export default function AppRoutes() {
           index
           element={<Navigate to="/dashboard" replace />}
         />
+        {/* ADMIN LOGIN */}
+        <Route
+          path="/admin"
+         element={ <AdminLoginPage />}
+        />
 
         {/* M1 - PROFILE */}
         <Route
