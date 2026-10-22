@@ -17,6 +17,7 @@ import {
 } from "../data/jobCardsData";
 import { mechanicPerformance } from "../data/dashboardData";
 import InspectionPhotos from "../components/InspectionPhotos";
+import { findVehicleByPlate } from "../data/customersData";
 import AddServiceModal from "../components/AddServiceModal";
 import AddPartModal from "../components/AddPartModal";
 import "./jobCardPrint.css";
@@ -183,6 +184,10 @@ function JobCardDetails({ job }: { job: JobCard }) {
     setTimeout(() => setShareMessage(""), 2500);
   };
 
+  // the Edit buttons open the profile of the customer who owns this vehicle
+  const owner = findVehicleByPlate(job.plateNo);
+  const customerLink = owner ? `/customers/${owner.customerId}` : "/customers";
+
   // other job cards for the same vehicle (same plate number)
   const history = jobCards.filter((j) => j.plateNo === job.plateNo && j.id !== job.id);
 
@@ -240,7 +245,7 @@ function JobCardDetails({ job }: { job: JobCard }) {
           title="Customer Details"
           icon={<User size={18} />}
           action={
-            <Link to="/customers" className={linkButton}>
+            <Link to={customerLink} className={linkButton}>
               <Pencil size={14} /> Edit
             </Link>
           }
@@ -266,7 +271,7 @@ function JobCardDetails({ job }: { job: JobCard }) {
           icon={<Car size={18} />}
           action={
             <>
-              <Link to="/customers" className={linkButton}>
+              <Link to={customerLink} className={linkButton}>
                 <Pencil size={14} /> Edit
               </Link>
               <button type="button" onClick={() => setShowHistory(!showHistory)} className={linkButton}>

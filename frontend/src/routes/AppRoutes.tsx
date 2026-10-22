@@ -4,6 +4,7 @@ import DashboardPage from "../modules/M2_Operations/pages/DashboardPage";
 import JobCardsPage from "../modules/M2_Operations/pages/JobCardsPage";
 import JobCardDetailsPage from "../modules/M2_Operations/pages/JobCardDetailsPage";
 import CustomersPage from "../modules/M2_Operations/pages/CustomersPage";
+import CustomerProfilePage from "../modules/M2_Operations/pages/CustomerProfilePage";
 
 function PlaceholderPage({ title }: { title: string }) {
   return (
@@ -40,7 +41,7 @@ export default function AppRoutes() {
            <Route path="job-cards" element={<JobCardsPage />} />
             <Route path="job-cards/:id" element={<JobCardDetailsPage />} />
             <Route path="customers" element={<CustomersPage />} />
-            <Route path="customers/:id" element={<PlaceholderPage title="Customer Profile" />} />
+            <Route path="customers/:id" element={<CustomerProfilePage />} />
 
         {pages.map((page) => (
           <Route
