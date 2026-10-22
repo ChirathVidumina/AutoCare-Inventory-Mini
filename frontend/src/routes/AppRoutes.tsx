@@ -3,6 +3,7 @@ import MainLayout from "../components/layout/MainLayout";
 import DashboardPage from "../modules/M2_Operations/pages/DashboardPage";
 import JobCardsPage from "../modules/M2_Operations/pages/JobCardsPage";
 import JobCardDetailsPage from "../modules/M2_Operations/pages/JobCardDetailsPage";
+import CustomersPage from "../modules/M2_Operations/pages/CustomersPage";
 
 function PlaceholderPage({ title }: { title: string }) {
   return (
@@ -16,7 +17,6 @@ function PlaceholderPage({ title }: { title: string }) {
 
 const pages = [
   { path: "video-assistance", title: "Video Assistance" },
-  { path: "customers", title: "Customer Management" },
   { path: "categories", title: "Service Categories" },
   { path: "inventory", title: "Inventory" },
   { path: "billing", title: "Billing" },
@@ -39,6 +39,8 @@ export default function AppRoutes() {
         <Route path="dashboard" element={<DashboardPage />} />
            <Route path="job-cards" element={<JobCardsPage />} />
             <Route path="job-cards/:id" element={<JobCardDetailsPage />} />
+            <Route path="customers" element={<CustomersPage />} />
+            <Route path="customers/:id" element={<PlaceholderPage title="Customer Profile" />} />
 
         {pages.map((page) => (
           <Route
