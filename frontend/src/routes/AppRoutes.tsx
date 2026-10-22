@@ -10,6 +10,9 @@ import DashboardPage from "../modules/M2_Operations/pages/DashboardPage";
 import CategoryList from "../modules/M3_ServiceCatalogue/pages/CategoryList";
 import ServicesPackages from "../modules/M3_ServiceCatalogue/pages/ServicesPackages";
 
+// M4 - Billing
+import InvoiceListPage from "../modules/M4_BookingBilling/InvoiceListPage";
+
 function PlaceholderPage({ title }: { title: string }) {
   return (
     <div className="p-8">
@@ -25,7 +28,6 @@ const pages = [
   { path: "job-cards", title: "Job Cards" },
   { path: "customers", title: "Customer Management" },
   { path: "inventory", title: "Inventory" },
-  { path: "billing", title: "Billing" },
   { path: "staff", title: "Staff" },
   { path: "mechanics", title: "Mechanic Management" },
   { path: "reports", title: "Reports" },
@@ -59,6 +61,12 @@ export default function AppRoutes() {
         <Route
           path="services-packages"
           element={<ServicesPackages />}
+        />
+
+        {/* M4 - BILLING */}
+        <Route
+          path="billing"
+          element={<InvoiceListPage />}
         />
 
         {/* OTHER ADMIN PAGES */}
