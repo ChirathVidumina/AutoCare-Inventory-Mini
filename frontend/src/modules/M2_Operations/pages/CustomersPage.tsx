@@ -14,8 +14,9 @@ import {
 } from "../data/customersData";
 import { jobCards } from "../data/jobCardsData";
 
-// TODO: read this from the Booking module (M4) when it is ready
+// TODO: read these from the Booking module (M4) when it is ready
 const PENDING_BOOKINGS_SAMPLE = 3;
+const PENDING_BOOKINGS_TREND_SAMPLE = { text: "-8%", direction: "down" } as const;
 
 const PAGE_SIZES = [5, 8, 10];
 
@@ -33,6 +34,14 @@ const statusStyles: Record<CustomerStatus, string> = {
 };
 
 type Trend = { text: string; direction: "up" | "down" | "none" };
+
+/** Compares a number with last month: "+20%" when there is something to compare with, otherwise "+2". */
+function change(now: number, before: number): Trend {
+  const diff = now - before;
+  const sign = diff >= 0 ? "+" : "";
+  const text = before > 0 ? `${sign}${Math.round((diff / before) * 100)}%` : `${sign}${diff}`;
+  return { text, direction: diff > 0 ? "up" : diff < 0 ? "down" : "none" };
+}
 
 function SummaryCard({ label, value, icon, trend }: { label: string; value: number; icon: ReactNode; trend: Trend }) {
   return (
@@ -54,6 +63,7 @@ function SummaryCard({ label, value, icon, trend }: { label: string; value: numb
         {trend.direction === "up" && <TrendingUp size={16} />}
         {trend.direction === "down" && <TrendingDown size={16} />}
         {trend.text}
+        <span className="font-normal text-slate-400">vs last month</span>
       </p>
     </div>
   );
@@ -93,21 +103,14 @@ export default function CustomersPage() {
   const newThisMonth = customers.filter((c) => c.joinedAt.startsWith(thisMonth)).length;
   const newLastMonth = customers.filter((c) => c.joinedAt.startsWith(lastMonth)).length;
   const activeServices = jobCards.filter((j) => j.status === "Open" || j.status === "In Progress").length;
-  const customersInWorkshop = rows.filter((r) => r.status !== "Inactive").length;
+  const activeAtMonthStart = jobCards.filter(
+    (j) => (j.status === "Open" || j.status === "In Progress") && j.createdAt < `${thisMonth}-01`
+  ).length;
 
-  const percent = (part: number, whole: number) => (whole > 0 ? Math.round((part / whole) * 100) : 0);
-  const monthDiff = newThisMonth - newLastMonth;
-
-  const customerTrend: Trend = {
-    text: `+${percent(newThisMonth, customers.length - newThisMonth)}% this month`,
-    direction: newThisMonth > 0 ? "up" : "none",
-  };
-  const serviceTrend: Trend = { text: `${customersInWorkshop} customers in the workshop`, direction: "none" };
-  const bookingTrend: Trend = { text: "Awaiting confirmation", direction: "none" };
-  const newTrend: Trend = {
-    text: `${monthDiff >= 0 ? "+" : ""}${monthDiff} vs last month`,
-    direction: monthDiff > 0 ? "up" : monthDiff < 0 ? "down" : "none",
-  };
+  const customerTrend = change(customers.length, customers.length - newThisMonth);
+  const serviceTrend = change(activeServices, activeAtMonthStart);
+  const bookingTrend: Trend = PENDING_BOOKINGS_TREND_SAMPLE;
+  const newTrend = change(newThisMonth, newLastMonth);
 
   // ----- search, sort, pages -----
   const query = search.trim().toLowerCase();
