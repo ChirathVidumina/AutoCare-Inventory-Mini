@@ -1,6 +1,8 @@
 import { useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Car, ChevronLeft, ChevronRight, Eye, Plus, Search, UserPlus, Users, Wrench } from "lucide-react";
+import {
+  Car, ChevronLeft, ChevronRight, Eye, Plus, Search, TrendingDown, TrendingUp, UserPlus, Users, Wrench,
+} from "lucide-react";
 import {
   customers,
   formatDate,
@@ -21,16 +23,29 @@ const statusStyles: Record<CustomerStatus, string> = {
   Inactive: "bg-slate-200 text-slate-600",
 };
 
-function SummaryCard({ label, value, icon }: { label: string; value: number; icon: ReactNode }) {
+type Trend = { text: string; direction: "up" | "down" | "none" };
+
+function SummaryCard({ label, value, icon, trend }: { label: string; value: number; icon: ReactNode; trend: Trend }) {
   return (
-    <div className="flex items-start justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <div>
-        <p className="text-sm text-slate-600">{label}</p>
-        <p className="mt-1 text-3xl font-bold text-slate-900">{value}</p>
+    <div className="rounded-2xl border border-slate-300 bg-white p-5 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-[15px] font-medium text-slate-600">{label}</p>
+          <p className="mt-1 text-2xl font-bold text-slate-900">{value}</p>
+        </div>
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-yellow-100 text-yellow-600">
+          {icon}
+        </span>
       </div>
-      <span className="flex h-11 w-11 items-center justify-center rounded-full bg-yellow-100 text-yellow-700">
-        {icon}
-      </span>
+      <p
+        className={`mt-4 flex items-center gap-1.5 text-xs font-semibold ${
+          trend.direction === "up" ? "text-green-600" : trend.direction === "down" ? "text-red-600" : "text-slate-500"
+        }`}
+      >
+        {trend.direction === "up" && <TrendingUp size={16} />}
+        {trend.direction === "down" && <TrendingDown size={16} />}
+        {trend.text}
+      </p>
     </div>
   );
 }
@@ -50,6 +65,32 @@ export default function CustomersPage() {
   const thisMonth = new Date().toLocaleDateString("en-CA").slice(0, 7); // "2026-10"
   const inService = rows.filter((r) => r.status === "In Service").length;
   const newThisMonth = customers.filter((c) => c.joinedAt.startsWith(thisMonth)).length;
+
+  // trends: compare this month with what we had before it
+  const lastMonthDate = new Date();
+  lastMonthDate.setDate(1);
+  lastMonthDate.setMonth(lastMonthDate.getMonth() - 1);
+  const lastMonth = lastMonthDate.toLocaleDateString("en-CA").slice(0, 7); // "2026-09"
+  const newLastMonth = customers.filter((c) => c.joinedAt.startsWith(lastMonth)).length;
+
+  const percent = (part: number, whole: number) => (whole > 0 ? Math.round((part / whole) * 100) : 0);
+  const newCustomerIds = new Set(customers.filter((c) => c.joinedAt.startsWith(thisMonth)).map((c) => c.id));
+  const newVehicles = vehicles.filter((v) => newCustomerIds.has(v.customerId)).length;
+  const monthDiff = newThisMonth - newLastMonth;
+
+  const customerTrend: Trend = {
+    text: `+${percent(newThisMonth, customers.length - newThisMonth)}% this month`,
+    direction: newThisMonth > 0 ? "up" : "none",
+  };
+  const serviceTrend: Trend = { text: `${percent(inService, customers.length)}% of customers`, direction: "none" };
+  const vehicleTrend: Trend = {
+    text: `+${percent(newVehicles, vehicles.length - newVehicles)}% this month`,
+    direction: newVehicles > 0 ? "up" : "none",
+  };
+  const newTrend: Trend = {
+    text: `${monthDiff >= 0 ? "+" : ""}${monthDiff} vs last month`,
+    direction: monthDiff > 0 ? "up" : monthDiff < 0 ? "down" : "none",
+  };
 
   // search by name, customer ID, phone or plate number
   const query = search.trim().toLowerCase();
@@ -91,10 +132,10 @@ export default function CustomersPage() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        <SummaryCard label="Total Customers" value={customers.length} icon={<Users size={20} />} />
-        <SummaryCard label="Customers In Service" value={inService} icon={<Wrench size={20} />} />
-        <SummaryCard label="Registered Vehicles" value={vehicles.length} icon={<Car size={20} />} />
-        <SummaryCard label="New This Month" value={newThisMonth} icon={<UserPlus size={20} />} />
+        <SummaryCard label="Total Customers" value={customers.length} icon={<Users size={20} />} trend={customerTrend} />
+        <SummaryCard label="Customers In Service" value={inService} icon={<Wrench size={20} />} trend={serviceTrend} />
+        <SummaryCard label="Registered Vehicles" value={vehicles.length} icon={<Car size={20} />} trend={vehicleTrend} />
+        <SummaryCard label="New This Month" value={newThisMonth} icon={<UserPlus size={20} />} trend={newTrend} />
       </div>
 
       <section className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
