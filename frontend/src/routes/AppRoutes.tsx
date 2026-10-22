@@ -13,8 +13,11 @@ import ServicesPackages from "../modules/M3_ServiceCatalogue/pages/ServicesPacka
 // M4 - Billing
 import InvoiceListPage from "../modules/M4_BookingBilling/InvoiceListPage";
 
-// M5 - Inventory
+// M5 - Inventory Management
 import InventoryPage from "../modules/M5_Inventory/InventoryPage";
+
+// M5 - Staff Management
+import StaffPage from "../modules/M5_Inventory/staff/StaffPage";
 
 function PlaceholderPage({ title }: { title: string }) {
   return (
@@ -30,7 +33,6 @@ const pages = [
   { path: "video-assistance", title: "Video Assistance" },
   { path: "job-cards", title: "Job Cards" },
   { path: "customers", title: "Customer Management" },
-  { path: "staff", title: "Staff" },
   { path: "mechanics", title: "Mechanic Management" },
   { path: "reports", title: "Reports" },
   { path: "notifications", title: "Notifications" },
@@ -41,7 +43,7 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        {/* DEFAULT ROUTE */}
+        {/* DEFAULT PAGE */}
         <Route
           index
           element={<Navigate to="/dashboard" replace />}
@@ -71,10 +73,16 @@ export default function AppRoutes() {
           element={<InvoiceListPage />}
         />
 
-        {/* M5 - INVENTORY MANAGEMENT */}
+        {/* M5 - INVENTORY */}
         <Route
           path="inventory"
           element={<InventoryPage />}
+        />
+
+        {/* M5 - STAFF MANAGEMENT */}
+        <Route
+          path="staff"
+          element={<StaffPage />}
         />
 
         {/* OTHER ADMIN PAGES */}
