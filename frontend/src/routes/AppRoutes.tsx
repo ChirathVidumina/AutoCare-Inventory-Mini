@@ -13,6 +13,9 @@ import ServicesPackages from "../modules/M3_ServiceCatalogue/pages/ServicesPacka
 // M4 - Billing
 import InvoiceListPage from "../modules/M4_BookingBilling/InvoiceListPage";
 
+// M5 - Inventory
+import InventoryPage from "../modules/M5_Inventory/InventoryPage";
+
 function PlaceholderPage({ title }: { title: string }) {
   return (
     <div className="p-8">
@@ -27,7 +30,6 @@ const pages = [
   { path: "video-assistance", title: "Video Assistance" },
   { path: "job-cards", title: "Job Cards" },
   { path: "customers", title: "Customer Management" },
-  { path: "inventory", title: "Inventory" },
   { path: "staff", title: "Staff" },
   { path: "mechanics", title: "Mechanic Management" },
   { path: "reports", title: "Reports" },
@@ -39,7 +41,7 @@ export default function AppRoutes() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        {/* DEFAULT PAGE */}
+        {/* DEFAULT ROUTE */}
         <Route
           index
           element={<Navigate to="/dashboard" replace />}
@@ -67,6 +69,12 @@ export default function AppRoutes() {
         <Route
           path="billing"
           element={<InvoiceListPage />}
+        />
+
+        {/* M5 - INVENTORY MANAGEMENT */}
+        <Route
+          path="inventory"
+          element={<InventoryPage />}
         />
 
         {/* OTHER ADMIN PAGES */}
