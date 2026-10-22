@@ -10,8 +10,10 @@ import ForgotPasswordPage from "../modules/M1_Authentication/pages/ForgotPasswor
 import ProfilePage from "../modules/M1_Authentication/pages/ProfilePage";
 import VideoAssistancePage from "../modules/M1_Authentication/pages/VideoAssistancePage";
 
-// M2 - Admin Dashboard
+// M2 - Admin Dashboard and Job Cards
 import DashboardPage from "../modules/M2_Operations/pages/DashboardPage";
+import JobCardsPage from "../modules/M2_Operations/pages/JobCardsPage";
+import JobCardDetailsPage from "../modules/M2_Operations/pages/JobCardDetailsPage";
 
 // M3 - Service Catalogue
 import CategoryList from "../modules/M3_ServiceCatalogue/pages/CategoryList";
@@ -24,6 +26,7 @@ import InvoiceListPage from "../modules/M4_BookingBilling/InvoiceListPage";
 import InventoryPage from "../modules/M5_Inventory/InventoryPage";
 import StaffPage from "../modules/M5_Inventory/staff/StaffPage";
 
+// Placeholder for unfinished modules
 function PlaceholderPage({ title }: { title: string }) {
   return (
     <div className="p-8">
@@ -35,7 +38,6 @@ function PlaceholderPage({ title }: { title: string }) {
 }
 
 const pages = [
-  { path: "job-cards", title: "Job Cards" },
   { path: "customers", title: "Customer Management" },
   { path: "mechanics", title: "Mechanic Management" },
   { path: "reports", title: "Reports" },
@@ -63,7 +65,10 @@ export default function AppRoutes() {
         />
 
         {/* M1 - PROFILE */}
-        <Route path="profile" element={<ProfilePage />} />
+        <Route
+          path="profile"
+          element={<ProfilePage />}
+        />
 
         {/* M1 - VIDEO ASSISTANCE */}
         <Route
@@ -71,10 +76,22 @@ export default function AppRoutes() {
           element={<VideoAssistancePage />}
         />
 
-        {/* M2 - DASHBOARD */}
+        {/* M2 - ADMIN DASHBOARD */}
         <Route
           path="dashboard"
           element={<DashboardPage />}
+        />
+
+        {/* M2 - JOB CARDS LIST */}
+        <Route
+          path="job-cards"
+          element={<JobCardsPage />}
+        />
+
+        {/* M2 - JOB CARD DETAILS */}
+        <Route
+          path="job-cards/:id"
+          element={<JobCardDetailsPage />}
         />
 
         {/* M3 - CATEGORY MANAGEMENT */}
@@ -101,7 +118,7 @@ export default function AppRoutes() {
           element={<InventoryPage />}
         />
 
-        {/* M5 - STAFF */}
+        {/* M5 - STAFF MANAGEMENT */}
         <Route
           path="staff"
           element={<StaffPage />}
