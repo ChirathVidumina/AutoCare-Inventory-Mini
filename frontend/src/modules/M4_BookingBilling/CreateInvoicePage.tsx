@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Banknote, CreditCard, Landmark, Trash2, X, Printer, Save } from "lucide-react";
 import {
-  jobCards, calcTotals, formatMoney, nextInvoiceId, addInvoice,
+  calcTotals, formatMoney, nextInvoiceId, addInvoice,
   type JobCard, type InvoiceItem, type PaymentMethod, type InvoiceStatus,
 } from "./mockData";
+import { billingJobCards } from "./jobCardAdapter";
 
 const TAX_RATE = 18;
 type Discount = { kind: "flat" | "percent"; value: number };
@@ -36,7 +37,7 @@ export default function CreateInvoicePage() {
   const discountAmount = discount.kind === "percent" ? (subtotal * discount.value) / 100 : discount.value;
   const totals = calcTotals(items, TAX_RATE, discountAmount);
 
-  const results = jobCards.filter((j) =>
+  const results = billingJobCards.filter((j) =>
     `${j.id} ${j.plate}`.toLowerCase().includes(query.toLowerCase())
   );
 
