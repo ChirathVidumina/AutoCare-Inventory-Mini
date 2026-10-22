@@ -98,8 +98,6 @@ const bottomItems: SidebarItem[] = [
 function SidebarLink({ item }: { item: SidebarItem }) {
   const Icon = item.icon;
 
-  
-
   return (
     <NavLink
       to={item.path}
@@ -111,7 +109,6 @@ function SidebarLink({ item }: { item: SidebarItem }) {
         }`
       }
     >
-      {/* Keep text aligned even when the icon is absent */}
       <span className="flex w-5 shrink-0 items-center justify-center">
         {Icon ? (
           <Icon size={19} className="text-[#70a7ff]" />
@@ -126,26 +123,26 @@ function SidebarLink({ item }: { item: SidebarItem }) {
 export default function MainLayout() {
   const { pathname } = useLocation();
 
-const pageTitle =
-  pathname === "/profile"
-    ? "My Profile"
-    : [...menuItems, ...bottomItems].find(
-        (item) =>
-          pathname === item.path ||
-          pathname.startsWith(`${item.path}/`)
-      )?.label ?? "Auto Care";
+  const pageTitle =
+    pathname === "/profile"
+      ? "My Profile"
+      : [...menuItems, ...bottomItems].find(
+          (item) =>
+            pathname === item.path ||
+            pathname.startsWith(`${item.path}/`)
+        )?.label ?? "Auto Care";
 
-const today = new Date().toLocaleDateString("en-US", {
-  timeZone: "Asia/Colombo",
-  month: "long",
-  day: "numeric",
-  year: "numeric",
-});
+  const today = new Date().toLocaleDateString("en-US", {
+    timeZone: "Asia/Colombo",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
 
   return (
-    <div className="flex min-h-screen bg-[#f8f9fc]">
-      {/* Sidebar */}
-      <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col bg-[#253f8d] px-4 py-6">
+    <div className="flex h-screen overflow-hidden bg-[#f8f9fc]">
+      {/* FIXED SIDEBAR */}
+      <aside className="flex h-screen w-60 shrink-0 flex-col bg-[#253f8d] px-4 py-6">
         {/* Brand */}
         <div className="mb-7 px-4">
           <h1 className="text-2xl font-bold tracking-wide text-white">
@@ -156,7 +153,7 @@ const today = new Date().toLocaleDateString("en-US", {
         {/* Main Navigation */}
         <nav
           aria-label="Main navigation"
-          className="min-h-0 flex-1 space-y-1 overflow-y-auto"
+          className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-y-contain"
         >
           {menuItems.map((item) => (
             <SidebarLink key={item.path} item={item} />
@@ -174,51 +171,55 @@ const today = new Date().toLocaleDateString("en-US", {
         </nav>
       </aside>
 
-      {/* Page Content */}
-<main className="min-w-0 flex-1">
-  <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 py-4 sm:px-8 print:hidden">
-    <p className="text-xl font-semibold text-slate-900">
-      {pageTitle}
-    </p>
-
-    <div className="flex flex-wrap items-center gap-4">
-      {/* Today's date */}
-      <span className="inline-flex items-center gap-2 rounded-full bg-[#e7eaf3] px-4 py-2 text-sm font-medium text-[#253f8d]">
-        <CalendarDays size={17} aria-hidden="true" />
-        {today}
-      </span>
-
-      {/* Notifications */}
-      <Link
-        to="/notifications"
-        aria-label="View notifications"
-        className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-blue-900"
-      >
-        <Bell size={21} aria-hidden="true" />
-      </Link>
-
-      {/* Admin profile — sample identity until account data is connected */}
-      <Link
-        to="/profile"
-        aria-label="Open admin profile"
-        className="flex items-center gap-3 border-l border-slate-200 pl-4"
-      >
-        <div className="text-right">
-          <p className="text-sm font-semibold text-slate-900">
-            Admin User
+      {/* INDEPENDENT SCROLLABLE PAGE CONTENT */}
+      <main className="h-screen min-w-0 flex-1 overflow-y-auto">
+        {/* Shared Admin Header */}
+        <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 bg-white px-4 py-4 sm:px-8 print:hidden">
+          <p className="text-xl font-semibold text-slate-900">
+            {pageTitle}
           </p>
-          <p className="text-xs text-slate-500">Manager</p>
-        </div>
 
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-[#253f8d]">
-          <CircleUserRound size={25} aria-hidden="true" />
-        </span>
-      </Link>
-    </div>
-  </header>
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Today's Date */}
+            <span className="inline-flex items-center gap-2 rounded-full bg-[#e7eaf3] px-4 py-2 text-sm font-medium text-[#253f8d]">
+              <CalendarDays size={17} aria-hidden="true" />
+              {today}
+            </span>
 
-  <Outlet />
-</main>
+            {/* Notifications */}
+            <Link
+              to="/notifications"
+              aria-label="View notifications"
+              className="flex h-10 w-10 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-blue-900"
+            >
+              <Bell size={21} aria-hidden="true" />
+            </Link>
+
+            {/* Admin Profile */}
+            <Link
+              to="/profile"
+              aria-label="Open admin profile"
+              className="flex items-center gap-3 border-l border-slate-200 pl-4"
+            >
+              <div className="text-right">
+                <p className="text-sm font-semibold text-slate-900">
+                  Admin User
+                </p>
+                <p className="text-xs text-slate-500">
+                  Manager
+                </p>
+              </div>
+
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-[#253f8d]">
+                <CircleUserRound size={25} aria-hidden="true" />
+              </span>
+            </Link>
+          </div>
+        </header>
+
+        {/* Active Page */}
+        <Outlet />
+      </main>
     </div>
   );
 }
