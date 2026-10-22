@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "../components/layout/MainLayout";
+import DashboardPage from "../modules/M2_Operations/pages/DashboardPage";
 
 function PlaceholderPage({ title }: { title: string }) {
   return (
@@ -12,7 +13,6 @@ function PlaceholderPage({ title }: { title: string }) {
 }
 
 const pages = [
-  { path: "dashboard", title: "Dashboard" },
   { path: "video-assistance", title: "Video Assistance" },
   { path: "job-cards", title: "Job Cards" },
   { path: "customers", title: "Customer Management" },
@@ -34,6 +34,8 @@ export default function AppRoutes() {
           index
           element={<Navigate to="/dashboard" replace />}
         />
+
+        <Route path="dashboard" element={<DashboardPage />} />
 
         {pages.map((page) => (
           <Route
