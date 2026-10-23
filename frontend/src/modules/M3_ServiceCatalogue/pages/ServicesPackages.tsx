@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
-  Bell, CalendarDays, CircleUserRound, Plus, Search,
+  Plus, Search,
   Wrench, Package, TrendingUp, Clock3, Eye, Pencil,
   Trash2, ChevronLeft, ChevronRight, 
 } from "lucide-react";
@@ -55,11 +55,7 @@ export default function ServicesPackages() {
 
   const isPackageTab = tab === "Service Packages";
 
-  const today = new Date().toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  
 
   const services = items.filter(
     (item) => item.type === "Service"
@@ -224,36 +220,6 @@ export default function ServicesPackages() {
 
   return (
     <div className="min-h-screen bg-[#fafbfe] text-slate-900">
-      {/* TOP HEADER */}
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 bg-white px-6 py-5 lg:px-10">
-        <div>
-          <h1 className="text-lg font-bold">
-            Service & Packages Overview
-          </h1>
-          <p className="mt-1 text-xs text-gray-400">
-            Manage your service catalog, pricing and bundles
-          </p>
-        </div>
-
-        <div className="flex items-center gap-5">
-          <div className="flex items-center gap-2 rounded-full bg-[#e9edf8] px-4 py-2 text-xs font-semibold text-[#253f8d]">
-            <CalendarDays size={16} />
-            {today}
-          </div>
-
-          <Bell size={18} className="text-gray-400" />
-
-          <div className="flex items-center gap-3 border-l border-gray-200 pl-4">
-            <div className="text-right">
-              <p className="text-xs font-semibold">Admin User</p>
-              <p className="text-[10px] text-gray-400">
-                Manager
-              </p>
-            </div>
-            <CircleUserRound size={26} />
-          </div>
-        </div>
-      </header>
 
       {/* PAGE */}
       <div className="mx-auto max-w-7xl px-5 py-7 lg:px-10">
