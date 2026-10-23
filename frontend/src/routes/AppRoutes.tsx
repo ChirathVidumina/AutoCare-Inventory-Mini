@@ -1,6 +1,37 @@
+
 import { Routes, Route, Navigate } from "react-router-dom";
+
 import MainLayout from "../components/layout/MainLayout";
 
+// M1 - Authentication
+import AdminLoginPage from "../modules/M1_Authentication/pages/AdminLoginPage";
+import RegisterPage from "../modules/M1_Authentication/pages/RegisterPage";
+import ForgotPasswordPage from "../modules/M1_Authentication/pages/ForgotPasswordPage";
+import ProfilePage from "../modules/M1_Authentication/pages/ProfilePage";
+import VideoAssistancePage from "../modules/M1_Authentication/pages/VideoAssistancePage";
+
+// M2 - Dashboard, Job Cards and Customers
+import DashboardPage from "../modules/M2_Operations/pages/DashboardPage";
+import JobCardsPage from "../modules/M2_Operations/pages/JobCardsPage";
+import JobCardDetailsPage from "../modules/M2_Operations/pages/JobCardDetailsPage";
+import CustomersPage from "../modules/M2_Operations/pages/CustomersPage";
+import CustomerProfilePage from "../modules/M2_Operations/pages/CustomerProfilePage";
+
+// M3 - Service Catalogue
+import CategoryList from "../modules/M3_ServiceCatalogue/pages/CategoryList";
+import ServicesPackages from "../modules/M3_ServiceCatalogue/pages/ServicesPackages";
+
+
+// M4 - Booking and Billing
+import InvoiceListPage from "../modules/M4_BookingBilling/InvoiceListPage";
+import CreateInvoicePage from "../modules/M4_BookingBilling/CreateInvoicePage";
+import InvoiceViewPage from "../modules/M4_BookingBilling/InvoiceViewPage";
+
+// M5 - Inventory and Staff
+import InventoryPage from "../modules/M5_Inventory/InventoryPage";
+import StaffPage from "../modules/M5_Inventory/staff/StaffPage";
+
+// Placeholder for unfinished pages
 function PlaceholderPage({ title }: { title: string }) {
   return (
     <div className="p-8">
@@ -12,14 +43,6 @@ function PlaceholderPage({ title }: { title: string }) {
 }
 
 const pages = [
-  { path: "dashboard", title: "Dashboard" },
-  { path: "video-assistance", title: "Video Assistance" },
-  { path: "job-cards", title: "Job Cards" },
-  { path: "customers", title: "Customer Management" },
-  { path: "categories", title: "Service Categories" },
-  { path: "inventory", title: "Inventory" },
-  { path: "billing", title: "Billing" },
-  { path: "staff", title: "Staff" },
   { path: "mechanics", title: "Mechanic Management" },
   { path: "reports", title: "Reports" },
   { path: "notifications", title: "Notifications" },
@@ -29,12 +52,103 @@ const pages = [
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* M1 - PUBLIC AUTHENTICATION PAGES */}
+      <Route path="login" element={<AdminLoginPage />} />
+      <Route path="register" element={<RegisterPage />} />
+      <Route
+        path="forgot-password"
+        element={<ForgotPasswordPage />}
+      />
+
+      {/* ADMIN / STAFF LAYOUT */}
       <Route element={<MainLayout />}>
+        {/* DEFAULT PAGE */}
         <Route
           index
           element={<Navigate to="/dashboard" replace />}
         />
+        {/* ADMIN LOGIN */}
+        <Route
+          path="/admin"
+         element={ <AdminLoginPage />}
+        />
 
+        {/* M1 - PROFILE */}
+        <Route
+          path="profile"
+          element={<ProfilePage />}
+        />
+
+        {/* M1 - VIDEO ASSISTANCE */}
+        <Route
+          path="video-assistance"
+          element={<VideoAssistancePage />}
+        />
+
+        {/* M2 - DASHBOARD */}
+        <Route
+          path="dashboard"
+          element={<DashboardPage />}
+        />
+
+        {/* M2 - JOB CARDS LIST */}
+        <Route
+          path="job-cards"
+          element={<JobCardsPage />}
+        />
+
+        {/* M2 - JOB CARD DETAILS */}
+        <Route
+          path="job-cards/:id"
+          element={<JobCardDetailsPage />}
+        />
+
+        {/* M2 - CUSTOMERS LIST */}
+        <Route
+          path="customers"
+          element={<CustomersPage />}
+        />
+
+        {/* M2 - CUSTOMER PROFILE */}
+        <Route
+          path="customers/:id"
+          element={<CustomerProfilePage />}
+        />
+
+        {/* M3 - CATEGORY MANAGEMENT */}
+        <Route
+          path="categories"
+          element={<CategoryList />}
+        />
+
+        {/* M3 - SERVICES AND PACKAGES */}
+        <Route
+          path="services-packages"
+          element={<ServicesPackages />}
+        />
+
+        {/* M4 - BILLING */}
+        <Route
+          path="billing"
+          element={<InvoiceListPage />}
+        />
+        <Route path="billing" element={<InvoiceListPage />} />
+        <Route path="billing/new" element={<CreateInvoicePage />} />
+        <Route path="billing/:invoiceId" element={<InvoiceViewPage />} />
+
+        {/* M5 - INVENTORY */}
+        <Route
+          path="inventory"
+          element={<InventoryPage />}
+        />
+
+        {/* M5 - STAFF */}
+        <Route
+          path="staff"
+          element={<StaffPage />}
+        />
+
+        {/* OTHER ADMIN PAGES */}
         {pages.map((page) => (
           <Route
             key={page.path}
@@ -42,6 +156,12 @@ export default function AppRoutes() {
             element={<PlaceholderPage title={page.title} />}
           />
         ))}
+
+        {/* UNKNOWN ROUTES */}
+        <Route
+          path="*"
+          element={<Navigate to="/dashboard" replace />}
+        />
       </Route>
     </Routes>
   );
