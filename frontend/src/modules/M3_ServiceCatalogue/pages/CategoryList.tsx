@@ -2,9 +2,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { FormEvent } from "react";
 import {
-  Bell,
-  CalendarDays,
-  CircleUserRound,
   Plus,
   Shapes,
   Package,
@@ -91,12 +88,7 @@ export default function CategoryList() {
     };
   }, [anyModalOpen]);
 
-  // Header date
-  const today = new Date().toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
+
 
   // Summary counts
   const totalCategories = categories.length;
@@ -268,41 +260,7 @@ export default function CategoryList() {
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
-      {/* HEADER */}
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-200 px-6 py-5 md:px-12">
-        <div>
-          <h1 className="text-xl font-bold">
-            Category Overview
-          </h1>
-
-          <p className="text-xs text-gray-500">
-            Manage your categories efficiently
-          </p>
-        </div>
-
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-3 rounded-full bg-[#e7eaf3] px-5 py-3 text-sm font-medium text-[#253f8d]">
-            <CalendarDays size={18} />
-            {today}
-          </div>
-
-          <Bell
-            size={19}
-            className="text-gray-400"
-          />
-
-          <div className="flex items-center gap-3 border-l border-gray-200 pl-5">
-            <span className="text-sm font-semibold">
-              Admin User
-            </span>
-
-            <CircleUserRound
-              size={25}
-              className="text-gray-600"
-            />
-          </div>
-        </div>
-      </header>
+      
 
       {/* PAGE CONTENT */}
       <div className="mx-auto max-w-7xl px-6 py-7 md:px-12">
